@@ -3,6 +3,7 @@ import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View} from 'react-native';
 import FontAwesome, { SolidIcons } from 'react-native-fontawesome';
+import moment from 'moment';
 
 
 function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
@@ -48,12 +49,12 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
             <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 20}}>
               Item
             </Text>
-            <FontAwesome icon={SolidIcons.trash} />
+            
 
           </View>
 
           <Input
-            label={'Item:'}
+            label={'Description:'}
             numberOfLines={3}
             multiline={true}
             onChangeText={value => setItem(value)}

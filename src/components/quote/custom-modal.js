@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
-import {ScrollView, View} from 'react-native';
+import {ScrollView, View, TouchableOpacity} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
   const [item, setItem] = useState(row.item);
@@ -28,6 +29,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
 
     toggleModel();
   };
+
   return (
     <Modal
       isVisible={isOpen}
@@ -41,12 +43,30 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
           padding: 10,
         }}>
         <ScrollView>
-          <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 20}}>
-            Item
-          </Text>
+          <View
+            style={{
+              display: 'flex',
+              flexDirection: 'row-reverse',
+              justifyContent: 'space-between',
+            }}>
+            <TouchableOpacity
+              onPress={() => {
+                console.log(row);
+                let filtered_date = tableData.filter(
+                  item => item.id !== row.id,
+                );
+                console.log(filtered_date);
+                setTableData(filtered_date);
+              }}>
+              <Icon name="trash" size={25} color="#900" />
+            </TouchableOpacity>
+            <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 20}}>
+              Item
+            </Text>
+          </View>
 
           <Input
-            label={'Item:'}
+            label={'Description:'}
             numberOfLines={3}
             multiline={true}
             onChangeText={value => setItem(value)}

@@ -15,7 +15,7 @@ function NavigationStack() {
         <Stack.Screen name="home" component={home}  options={{headerShown: false}}></Stack.Screen>
         <Stack.Screen name="quote" component={Quote} options={{headerTitle:"Quotation"}}></Stack.Screen>
         <Stack.Screen name='settings' component={Settings} options={{headerTitle:"Settings"}}></Stack.Screen>
-        <Stack.Screen name='generated_pdf' component={GeneratedPdf} options={{headerTitle:"Generated PFD"}}></Stack.Screen>
+        <Stack.Screen name='generated_pdf' component={GeneratedPdf} options={{headerTitle:"Generated PDF"}}></Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

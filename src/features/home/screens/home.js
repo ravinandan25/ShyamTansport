@@ -2,8 +2,10 @@ import {useNavigation} from '@react-navigation/native';
 import {Button} from '@rneui/themed';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
+import { MMKVLoader } from "react-native-mmkv-storage";
 
 function Home() {
+  const Storage = new MMKVLoader().initialize(); 
   const navigation = useNavigation();
   return (
     <View style={styles.container}>

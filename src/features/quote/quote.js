@@ -2,11 +2,23 @@ import {useNavigation} from '@react-navigation/native';
 import {Input} from '@rneui/base';
 import {Button, Text, useTheme} from '@rneui/themed';
 import React, {useEffect, useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+} from 'react-native';
 import {PlusCircleOutlined} from 'react-native-vector-icons/AntDesign';
 import TableRow from '../../components/quote/table-row';
 import CustomModal from '../../components/quote/custom-modal';
 import CustomAddModal from '../../components/quote/custom-add-modaj';
+import DateTimePicker from 'react-native-ui-datepicker';
+import dayjs from 'dayjs';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
+import Icon from 'react-native-vector-icons/FontAwesome';
+import moment from 'moment';
 
 function Quote() {
   const navigation = useNavigation();
@@ -14,14 +26,39 @@ function Quote() {
   const [tableData, setTableData] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const [total, setTotal] = useState(0);
+  const [tax, setTax] = useState('0'); 
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [customerName, setCustomerName] = useState("")
+  const [phone, setPhone] = useState("")
+  const [address, setAddress] = useState("")
+  const [loadingDate, setLoadingDate] = useState(
+    moment().format('DD MMM, YYYY'),
+  );
+
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
+  };
+
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = date => {
+    setLoadingDate(moment(date).format('DD MMM, YYYY'));
+    hideDatePicker();
+  };
 
   useEffect(() => {
     let temp_total = 0;
     tableData.map(item => {
       temp_total += item.qty * item.rate;
     });
+    if (tax !== '') {
+      temp_total += parseFloat(tax);
+    }
+
     setTotal(temp_total);
-  }, [tableData]);
+  }, [tableData, tax]);
 
   return (
     <View
@@ -30,151 +67,251 @@ function Quote() {
         position: 'relative',
         height: '100%',
       }}>
-      <ScrollView>
-        <View style={{padding: 10, paddingBottom: 80}}>
-          <Input
-            textContentType="name"
-            label={'Customer Name:'}
-            onChangeText={value => console.log(value)}
-            labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
-            inputContainerStyle={{
-              borderBottomWidth: 0,
-              marginBottom: 0,
+      <KeyboardAvoidingView
+        style={{flex: 1}}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <ScrollView >
+          <View style={{padding: 10, marginBottom:200}}>
+            <Input
+              textContentType="name"
+              label={'Customer Name:'}
+              onChangeText={value => setCustomerName(value)}
+              labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
+              inputContainerStyle={{
+                borderBottomWidth: 0,
+                marginBottom: 0,
 
-              padding: 0,
-              backgroundColor: 'rgba(255,214,194,.5)',
-              borderRadius: 8,
-              marginVertical: 4,
-            }}
-            inputStyle={{
-              paddingHorizontal: 8,
-              height: 40,
-              fontSize: 14,
-              verticalAlign: 'middle',
-            }}
-            errorStyle={{
-              margin: 0,
-            }}
-          />
+                padding: 0,
+                backgroundColor: 'rgba(255,214,194,.5)',
+                borderRadius: 8,
+                marginVertical: 4,
+              }}
+              inputStyle={{
+                paddingHorizontal: 8,
+                height: 40,
+                fontSize: 14,
+                verticalAlign: 'middle',
+              }}
+              errorStyle={{
+                margin: 0,
+              }}
+            />
 
-          <Input
-            label={'Customer Address:'}
-            numberOfLines={3}
-            multiline={true}
-            onChangeText={value => console.log(value)}
-            scrollEnabled={true}
-            labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
-            inputContainerStyle={{
-              borderBottomWidth: 0,
-              marginBottom: 0,
-              backgroundColor: 'blue',
-              padding: 0,
-              backgroundColor: 'rgba(255,214,194,.5)',
-              borderRadius: 8,
-              marginVertical: 4,
-            }}
-            inputStyle={{
-              paddingHorizontal: 8,
-              fontSize: 14,
-              verticalAlign: 'top',
-            }}
-            errorStyle={{
-              margin: 0,
-            }}
-          />
-          <Input
-            textContentType="telephoneNumber"
-            inputMode="tel"
-            label={'Customer Phone:'}
-            maxLength={13}
-            onChangeText={value => console.log(value)}
-            labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
-            inputContainerStyle={{
-              borderBottomWidth: 0,
-              marginBottom: 0,
-              backgroundColor: 'blue',
-              padding: 0,
-              backgroundColor: 'rgba(255,214,194,.5)',
-              borderRadius: 8,
-              marginVertical: 4,
-            }}
-            inputStyle={{
-              paddingHorizontal: 8,
-              height: 40,
-              fontSize: 14,
-              verticalAlign: 'middle',
-            }}
-            errorStyle={{
-              margin: 0,
-            }}
-          />
-          <View
-            style={{
-              display: 'flex',
-              flexDirection: 'row-reverse',
-              paddingHorizontal: 10,
-              marginBottom: 10,
-            }}>
-            <Button
-              buttonStyle={styles.icon_btn}
-              containerStyle={styles.icon_btn}
-              color={'apricot'}
-              onPress={() => setIsVisible(true)}>
-              +
-            </Button>
-          </View>
-          <View style={{paddingHorizontal: 10}}>
+            <Input
+              label={'Customer Address:'}
+              numberOfLines={3}
+              multiline={true}
+              onChangeText={value => setAddress(value)}
+              scrollEnabled={true}
+              labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
+              inputContainerStyle={{
+                borderBottomWidth: 0,
+                marginBottom: 0,
+                backgroundColor: 'blue',
+                padding: 0,
+                backgroundColor: 'rgba(255,214,194,.5)',
+                borderRadius: 8,
+                marginVertical: 4,
+              }}
+              inputStyle={{
+                paddingHorizontal: 8,
+                fontSize: 14,
+                verticalAlign: 'top',
+              }}
+              errorStyle={{
+                margin: 0,
+              }}
+            />
+            <Input
+              textContentType="telephoneNumber"
+              inputMode="tel"
+              label={'Customer Phone:'}
+              maxLength={13}
+              onChangeText={value => setPhone(value)}
+              labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
+              inputContainerStyle={{
+                borderBottomWidth: 0,
+                marginBottom: 0,
+                backgroundColor: 'blue',
+                padding: 0,
+                backgroundColor: 'rgba(255,214,194,.5)',
+                borderRadius: 8,
+                marginVertical: 4,
+              }}
+              inputStyle={{
+                paddingHorizontal: 8,
+                height: 40,
+                fontSize: 14,
+                verticalAlign: 'middle',
+              }}
+              errorStyle={{
+                margin: 0,
+              }}
+            />
+
             <View
               style={{
                 display: 'flex',
                 flexDirection: 'row',
+                backgroundColor: 'RED',
                 alignItems: 'center',
-                height: 40,
-                marginBottom: 10,
-                borderRadius: 8,
-                backgroundColor: theme.colors.old_rose,
+                justifyContent: 'space-between',
               }}>
-              <View style={{width: '15%'}}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
-                  S.no
-                </Text>
+              <View>
+                <Input
+                  label={'Loading Date:'}
+                  onPressIn={() => setDatePickerVisibility(true)}
+                  onChangeText={value => console.log(value)}
+                  labelStyle={{fontSize: 14, marginVertical: 0, color: 'black'}}
+                  inputContainerStyle={{
+                    borderBottomWidth: 0,
+                    marginBottom: 0,
+                    width: 100,
+                    padding: 0,
+                    backgroundColor: 'rgba(255,214,194,.5)',
+                    borderRadius: 8,
+                    marginVertical: 4,
+                  }}
+                  inputStyle={{
+                    paddingHorizontal: 8,
+                    height: 40,
+                    fontSize: 14,
+                    width: 100,
+                    verticalAlign: 'middle',
+                  }}
+                  errorStyle={{
+                    margin: 0,
+                  }}
+                  value={loadingDate}
+                />
               </View>
-              <View style={{width: '50%'}}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
-                  Item
-                </Text>
-              </View>
-              <View style={{width: '10%'}}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
-                  Qty
-                </Text>
-              </View>
-              <View style={{width: '25%'}}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
-                  Rate
-                </Text>
-              </View>
+              <TouchableOpacity
+                onPress={() => setIsVisible(true)}
+                style={{
+                  backgroundColor: '#FFCDB2',
+                  borderRadius: 50,
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: 50,
+                  width: 50,
+                }}>
+                <Icon name="plus" size={20} color="#000" />
+              </TouchableOpacity>
             </View>
-            {tableData.map((row, index) => {
-              return (
-                <TableRow
-                  key={`row-${index}`}
-                  row={row}
-                  tableData={tableData}
-                  setTableData={setTableData}></TableRow>
-              );
-            })}
-            <Text style={{textAlign:"right",fontSize:14, fontWeight:"bold"}}>Total: {total}</Text>
+            <View style={{paddingHorizontal: 10}}>
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  height: 40,
+                  marginBottom: 10,
+                  borderRadius: 8,
+                  backgroundColor: theme.colors.old_rose,
+                }}>
+                <View style={{width: '15%'}}>
+                  <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+                    S.no
+                  </Text>
+                </View>
+                <View style={{width: '50%'}}>
+                  <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+                    Item
+                  </Text>
+                </View>
+                <View style={{width: '10%'}}>
+                  <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+                    Qty
+                  </Text>
+                </View>
+                <View style={{width: '25%'}}>
+                  <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+                    Rate
+                  </Text>
+                </View>
+              </View>
+              {tableData.map((row, index) => {
+                return (
+                  <TableRow
+                    key={`row-${index}`}
+                    row={row}
+                    tableData={tableData}
+                    setTableData={setTableData}></TableRow>
+                );
+              })}
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                }}>
+                <View style={{height: 40}}>
+                  <Text>GST/Tax : </Text>
+                </View>
+
+                <View>
+                  <Input
+                    inputMode="numeric"
+                    onChangeText={value => {
+                      setTax(value);
+                    }}
+                    onBlur={() => {
+                      if (tax == '') {
+                        setTax('0');
+                      }
+                    }}
+                    onFocus={() => {
+                      if (tax == '0') {
+                        setTax('');
+                      }
+                    }}
+                    inputContainerStyle={{
+                      borderBottomWidth: 0,
+                      marginBottom: 0,
+                      padding: 0,
+                      backgroundColor: 'rgba(255,214,194,.5)',
+                      borderRadius: 8,
+                      marginVertical: 4,
+                      marginHorizontal: -10,
+                      width: 80,
+                      height: 40,
+                    }}
+                    value={tax}
+                    inputStyle={{
+                      paddingHorizontal: 8,
+                      fontSize: 14,
+                      verticalAlign: 'top',
+                    }}
+                    defaultValue={tax}
+                  />
+                </View>
+              </View>
+              <Text
+                style={{textAlign: 'right', fontSize: 14, fontWeight: 'bold'}}>
+                Total: {total}
+              </Text>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
       <View style={styles.button_container}>
         <Button
           title="Generate Quotation"
           color="secondary"
           containerStyle={styles.btn}
           onPress={() => {
-              navigation.navigate('generated_pdf');
+            // console.log(tableData);
+            navigation.navigate('generated_pdf', {
+              table: tableData,
+              total: total,
+              loadingDate: loadingDate,
+              customerName:customerName,
+              phone:phone,
+              address:address
+            });
           }}></Button>
       </View>
       <CustomAddModal
@@ -182,6 +319,12 @@ function Quote() {
         tableData={tableData}
         isOpen={isVisible}
         setIsOpen={setIsVisible}></CustomAddModal>
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+      />
     </View>
   );
 }
