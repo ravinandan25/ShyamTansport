@@ -29,6 +29,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
 
     toggleModel();
   };
+  
 
   return (
     <Modal
@@ -51,14 +52,20 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             }}>
             <TouchableOpacity
               onPress={() => {
-                console.log(row);
+                
                 let filtered_date = tableData.filter(
                   item => item.id !== row.id,
                 );
+                
+                filtered_date.map((item, index)=>{
+                  item.id= index+1
+                })
                 console.log(filtered_date);
+                setIsOpen(!isOpen)
                 setTableData(filtered_date);
               }}>
-              <Icon name="trash" size={25} color="#900" />
+                <Text>Delete</Text>
+              {/* <Icon name="trash" size={25} color="#900" /> */}
             </TouchableOpacity>
             <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 20}}>
               Item
@@ -98,7 +105,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             defaultValue={row.item}
           />
           <Input
-            textContentType="name"
+          
             label={'Quantity:'}
             onChangeText={value => setQuant(value)}
             labelStyle={{
@@ -129,7 +136,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             defaultValue={row.qty}
           />
           <Input
-            textContentType="name"
+            
             label={'Rate:'}
             onChangeText={value => setRate(value)}
             labelStyle={{

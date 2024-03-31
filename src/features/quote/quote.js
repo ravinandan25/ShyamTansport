@@ -26,14 +26,54 @@ function Quote() {
   const [tableData, setTableData] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const [total, setTotal] = useState(0);
-  const [tax, setTax] = useState('0'); 
+  const [tax, setTax] = useState('0');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [customerName, setCustomerName] = useState("")
-  const [phone, setPhone] = useState("")
-  const [address, setAddress] = useState("")
+  const [customerName, setCustomerName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [tableString, setTableString] = useState('');
   const [loadingDate, setLoadingDate] = useState(
     moment().format('DD MMM, YYYY'),
   );
+  data = [
+    {
+      id: 1,
+      item: 'Packing Material Charges',
+      qty: '1',
+      rate: '7000',
+    },
+    {
+      id: 2,
+      item: 'Labour for Packing and Loading',
+      qty: '1',
+      rate: '6000',
+    },
+    {
+      id: 3,
+      item: 'Transportation Charges',
+      qty: '1',
+      rate: '7000',
+    },
+    {
+      id: 4,
+      item: 'Unloading Charges',
+      qty: '1',
+      rate: '3000',
+    },
+    {
+      id: 5,
+      item: 'Bill Charge',
+      qty: '1',
+      rate: '4500',
+    },
+
+    {
+      id: 6,
+      item: 'Transit insurance free for 2 lakh',
+      qty: '1',
+      rate: '0.0',
+    },
+  ];
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -49,6 +89,30 @@ function Quote() {
   };
 
   useEffect(() => {
+    setTableData(data);
+  }, []);
+
+  const render_table_data = async () => {
+    let data = tableData.map(item => {
+      return `<tr>
+          <td>${item.id}</td>
+          <td>${item.item}</td>
+          <td>${item.qty}</td>
+          <td>${item.rate}</td>
+          <td>${item.qty * item.rate}</td>
+        </tr>`;
+    });
+
+    tableRowsHTML = data.join('');
+    setTableString(tableRowsHTML);
+    
+  };
+
+  useEffect(() => {
+    render_table_data();
+  }, []);
+
+  useEffect(() => {
     let temp_total = 0;
     tableData.map(item => {
       temp_total += item.qty * item.rate;
@@ -58,6 +122,7 @@ function Quote() {
     }
 
     setTotal(temp_total);
+    render_table_data();
   }, [tableData, tax]);
 
   return (
@@ -70,8 +135,8 @@ function Quote() {
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView >
-          <View style={{padding: 10, marginBottom:200}}>
+        <ScrollView>
+          <View style={{padding: 10, marginBottom: 200}}>
             <Input
               textContentType="name"
               label={'Customer Name:'}
@@ -197,7 +262,8 @@ function Quote() {
                   height: 50,
                   width: 50,
                 }}>
-                <Icon name="plus" size={20} color="#000" />
+                <Text>+</Text>
+                {/* <Icon name="plus" size={20} color="#000" /> */}
               </TouchableOpacity>
             </View>
             <View style={{paddingHorizontal: 10}}>
@@ -308,9 +374,11 @@ function Quote() {
               table: tableData,
               total: total,
               loadingDate: loadingDate,
-              customerName:customerName,
-              phone:phone,
-              address:address
+              customerName: customerName,
+              phone: phone,
+              address: address,
+              tax: tax,
+              tableString: tableString,
             });
           }}></Button>
       </View>
