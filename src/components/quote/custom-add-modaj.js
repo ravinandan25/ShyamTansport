@@ -14,11 +14,45 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
   const toggleModel = () => {
     setIsOpen(!isOpen);
   };
+  const [errors, setErrors] = useState({
+    item: '',
+    quantity: '',
+    rate: '',
+  });
   const handelSave = () => {
-    if (item != '' && quant != '' && rate != '') {
+    const qtyNum = Number(quant);
+    const rateNum = Number(rate);
+
+    let formIsValid = true;
+    let newErrors = { item: '', quantity: '', rate: '' };
+
+    // Validation
+    if (item.trim() === '') {
+      newErrors.item = 'Description is required';
+      formIsValid = false;
+    }
+
+    if (isNaN(qtyNum) || qtyNum <= 0) {
+      newErrors.quantity = 'Quantity must be a positive number';
+      formIsValid = false;
+    }
+
+    if (isNaN(rateNum) || rateNum < 0) {
+      newErrors.rate = 'Rate must be a non-negative number';
+      formIsValid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (formIsValid) {
       let temp = [
         ...tableData,
-        {id: tableData?.length + 1, item: item, qty: quant, rate: rate},
+        {
+          id: tableData?.length + 1,
+          item: item.trim(),
+          qty: qtyNum,
+          rate: rateNum,
+        },
       ];
       setTableData(temp);
       toggleModel();
@@ -27,6 +61,7 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
       setQuant('');
     }
   };
+  
   return (
     <Modal
       isVisible={isOpen}
@@ -81,8 +116,10 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'top',
             }}
             errorStyle={{
-              margin: 0,
+              
+              marginVertical:5
             }}
+            errorMessage={errors.item} 
           />
           <Input
             label={'Quantity:'}
@@ -110,8 +147,9 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'middle',
             }}
             errorStyle={{
-              margin: 0,
+              marginVertical:5
             }}
+            errorMessage={errors.quantity} 
           />
           <Input
             label={'Rate:'}
@@ -139,8 +177,10 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'middle',
             }}
             errorStyle={{
-              margin: 0,
+              marginVertical:5,
+              marginBottom:10
             }}
+            errorMessage={errors.rate}
           />
           <View
             style={{

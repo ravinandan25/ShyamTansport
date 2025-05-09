@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View, TouchableOpacity} from 'react-native';
 
-import { Icon } from 'react-native-elements'
-
+import {Icon} from 'react-native-elements';
 
 function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
   const [item, setItem] = useState(row.item);
@@ -14,23 +13,57 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
   const toggleModel = () => {
     setIsOpen(!isOpen);
   };
+  const [errors, setErrors] = useState({
+    item: '',
+    quantity: '',
+    rate: '',
+  });
   const handelSave = () => {
-    let temp = [...tableData];
-    let index = tableData.findIndex(item => item.id == row.id);
-    console.log(index);
-    if (index != -1) {
-      console.log(index);
-      console.log(row.qty);
-      temp[index].item = item;
-      temp[index].qty = quant;
-      temp[index].rate = rate;
-      console.log(temp[index].qty);
-      console.log(temp);
-      setTableData(temp);
+    const qtyNum = Number(quant);
+    const rateNum = Number(rate);
+    let formIsValid = true;
+    let newErrors = {item: '', quantity: '', rate: ''};
+
+    // Validation
+    if (item.trim() === '') {
+      newErrors.item = 'Description is required';
+      formIsValid = false;
     }
 
-    toggleModel();
+    if (isNaN(qtyNum) || qtyNum <= 0) {
+      newErrors.quantity = 'Quantity must be a positive number';
+      formIsValid = false;
+    }
+
+    if (isNaN(rateNum) || rateNum < 0) {
+      newErrors.rate = 'Rate must be a non-negative number';
+      formIsValid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (formIsValid) {
+      let temp = [...tableData];
+      let index = tableData.findIndex(item => item.id == row.id);
+
+      if (index != -1) {
+        console.log(index);
+        console.log(row.qty);
+        temp[index].item = item;
+        temp[index].qty = quant;
+        temp[index].rate = rate;
+        console.log(temp[index].qty);
+        console.log(temp);
+        setTableData(temp);
+      }
+
+      toggleModel();
+    }
   };
+
+  useEffect(() => {
+    console.log('ROW=======', row);
+  }, []);
 
   return (
     <Modal
@@ -64,7 +97,6 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
                 setIsOpen(!isOpen);
                 setTableData(filtered_date);
               }}>
-             
               <Icon name="delete" size={25} color="#900" />
               <Text>Delete</Text>
             </TouchableOpacity>
@@ -100,10 +132,13 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
               fontSize: 14,
               verticalAlign: 'top',
             }}
-            errorStyle={{
-              margin: 0,
-            }}
+           
             defaultValue={row.item}
+            errorStyle={{
+              
+              marginVertical:5
+            }}
+            errorMessage={errors.item} 
           />
           <Input
             label={'Quantity:'}
@@ -114,6 +149,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
               color: 'black',
               marginHorizontal: -10,
             }}
+            keyboardType="numeric"
             inputMode="numeric"
             inputContainerStyle={{
               borderBottomWidth: 0,
@@ -131,9 +167,10 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'middle',
             }}
             errorStyle={{
-              margin: 0,
+              marginVertical:5
             }}
-            defaultValue={row.qty}
+            errorMessage={errors.quantity} 
+            defaultValue={String(row.qty)}
           />
           <Input
             label={'Rate:'}
@@ -161,9 +198,11 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'middle',
             }}
             errorStyle={{
-              margin: 0,
+              marginVertical:5,
+              marginBottom:10
             }}
-            defaultValue={row.rate}
+            errorMessage={errors.rate}
+            defaultValue={String(row.rate)}
           />
           <View
             style={{

@@ -38,39 +38,39 @@ function Quote() {
     {
       id: 1,
       item: 'Packing Material Charges',
-      qty: '1',
-      rate: '7000',
+      qty: 1,
+      rate: 7000,
     },
     {
       id: 2,
       item: 'Labour for Packing and Loading',
-      qty: '1',
-      rate: '6000',
+      qty: 1,
+      rate: 6000,
     },
     {
       id: 3,
       item: 'Transportation Charges',
-      qty: '1',
-      rate: '7000',
+      qty: 1,
+      rate: 7000,
     },
     {
       id: 4,
       item: 'Unloading Charges',
-      qty: '1',
-      rate: '3000',
+      qty: 1,
+      rate: 3000,
     },
     {
       id: 5,
       item: 'Bill Charge',
-      qty: '1',
-      rate: '4500',
+      qty: 1,
+      rate: 4500,
     },
 
     {
       id: 6,
       item: 'Transit insurance free for 2 lakh',
-      qty: '1',
-      rate: '0.0',
+      qty: 1,
+      rate: 0.0,
     },
   ];
 
