@@ -12,6 +12,11 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
   const {theme} = useTheme();
   const toggleModel = () => {
     setIsOpen(!isOpen);
+    setErrors({
+      item: '',
+      quantity: '',
+      rate: '',
+    });
   };
   const [errors, setErrors] = useState({
     item: '',
@@ -30,15 +35,16 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
       formIsValid = false;
     }
 
-    if (isNaN(qtyNum) || qtyNum <= 0) {
+    if (quant === '' || isNaN(qtyNum) || qtyNum <= 0) {
       newErrors.quantity = 'Quantity must be a positive number';
       formIsValid = false;
     }
-
-    if (isNaN(rateNum) || rateNum < 0) {
+    
+    if (rate === '' || isNaN(rateNum) || rateNum < 0) {
       newErrors.rate = 'Rate must be a non-negative number';
       formIsValid = false;
     }
+    
 
     setErrors(newErrors);
 
@@ -90,7 +96,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
                   item => item.id !== row.id,
                 );
 
-                filtered_date.map((item, index) => {
+                filtered_date.forEach((item, index) => {
                   item.id = index + 1;
                 });
                 console.log(filtered_date);

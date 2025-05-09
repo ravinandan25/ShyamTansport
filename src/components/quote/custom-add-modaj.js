@@ -2,9 +2,8 @@ import React, {useState} from 'react';
 import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View} from 'react-native';
-import FontAwesome, { SolidIcons } from 'react-native-fontawesome';
+import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
 import moment from 'moment';
-
 
 function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
   const [item, setItem] = useState('');
@@ -13,6 +12,11 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
   const {theme} = useTheme();
   const toggleModel = () => {
     setIsOpen(!isOpen);
+    setErrors({
+      item: '',
+      quantity: '',
+      rate: '',
+    });
   };
   const [errors, setErrors] = useState({
     item: '',
@@ -24,7 +28,7 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
     const rateNum = Number(rate);
 
     let formIsValid = true;
-    let newErrors = { item: '', quantity: '', rate: '' };
+    let newErrors = {item: '', quantity: '', rate: ''};
 
     // Validation
     if (item.trim() === '') {
@@ -32,12 +36,12 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
       formIsValid = false;
     }
 
-    if (isNaN(qtyNum) || qtyNum <= 0) {
+    if (quant === '' || isNaN(qtyNum) || qtyNum <= 0) {
       newErrors.quantity = 'Quantity must be a positive number';
       formIsValid = false;
     }
 
-    if (isNaN(rateNum) || rateNum < 0) {
+    if (rate === '' || isNaN(rateNum) || rateNum < 0) {
       newErrors.rate = 'Rate must be a non-negative number';
       formIsValid = false;
     }
@@ -59,9 +63,12 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
       setItem('');
       setRate('');
       setQuant('');
+     
     }
   };
-  
+
+
+
   return (
     <Modal
       isVisible={isOpen}
@@ -84,8 +91,6 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
             <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 20}}>
               Item
             </Text>
-            
-
           </View>
 
           <Input
@@ -116,10 +121,9 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'top',
             }}
             errorStyle={{
-              
-              marginVertical:5
+              marginVertical: 5,
             }}
-            errorMessage={errors.item} 
+            errorMessage={errors.item}
           />
           <Input
             label={'Quantity:'}
@@ -147,9 +151,9 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'middle',
             }}
             errorStyle={{
-              marginVertical:5
+              marginVertical: 5,
             }}
-            errorMessage={errors.quantity} 
+            errorMessage={errors.quantity}
           />
           <Input
             label={'Rate:'}
@@ -177,8 +181,8 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
               verticalAlign: 'middle',
             }}
             errorStyle={{
-              marginVertical:5,
-              marginBottom:10
+              marginVertical: 5,
+              marginBottom: 10,
             }}
             errorMessage={errors.rate}
           />
