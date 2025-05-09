@@ -16,8 +16,7 @@ import CustomAddModal from '../../components/quote/custom-add-modaj';
 import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { Icon } from 'react-native-elements'
 import moment from 'moment';
 
 function Quote() {
@@ -262,8 +261,8 @@ function Quote() {
                   height: 50,
                   width: 50,
                 }}>
-                <Text>+</Text>
-                {/* <Icon name="plus" size={20} color="#000" /> */}
+               
+                <Icon name="add" size={20} color="#000" />
               </TouchableOpacity>
             </View>
             <View style={{paddingHorizontal: 10}}>

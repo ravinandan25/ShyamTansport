@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Dimensions,
   Linking,
-  
 } from 'react-native';
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import background_image from '../../../assets/images/img1.jpg';
@@ -19,21 +18,25 @@ import Pdf from 'react-native-pdf';
 import moment from 'moment';
 import {storage} from '../../../..';
 
-
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
+import {Icon} from 'react-native-elements';
 
 function GeneratedPdf({route}) {
-  const {table, total, loadingDate, customerName, phone, address, tax,tableString} =
-    route.params;
-   
+  const {
+    table,
+    total,
+    loadingDate,
+    customerName,
+    phone,
+    address,
+    tax,
+    tableString,
+  } = route.params;
 
   // const exampleImageUri = Image.resolveAssetSource(background_image).uri;
- 
+
   const [url, setUrl] = useState('');
-  
- 
-  
 
   let options = {
     html: `<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -58,30 +61,51 @@ function GeneratedPdf({route}) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     
-    <div class="px-5" style="background-image:url('https://lh3.googleusercontent.com/d/1Q44RUnA-mGAVSt1RGYI3gjmMGdsuFENc'); background-repeat: no-repeat; background-size: cover; max-height: 350px;">
-      <div class="py-5" style="background-color: transparent;">
-        <div class="d-flex justify-content-between align-items-start">
-          <div class="py-5 mt-4">
-            <h1>Shyam Transport Company</h1>
-            <p>Room No. Cen-844 Part III Ganesh Murti Nagar, Near Navy Nagar <br> Colaba, Mumbai -400 005</p>
-            <p><span class="fw-bold mb-4" style="font-weight: 600;">Mob:</span> +91 9869555680, +91 8108031062 <br><span class="fw-bold mb-4" style="font-weight: 600;">Email:</span> radeshaym588@gmail.com</p>
-            <p>(CRDA Recognized, Government Registered <br> Transport Contractor & Commission Agent)</p>
-          </div>
-          <div>
-            <h5 class="fw-bold">Regd. No. 12612400000003969464</h5>
-            <h5 class="fw-bold">GSTIN. 27ALWPD2794B1ZW</h5>
+    <div class="px-5 position-relative" style=" overflow: hidden; ">
+        <!-- Background image with opacity -->
+        <div style="
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background-image: url('https://shyamtransportbucket.s3.ap-south-1.amazonaws.com/team/img1.jpg');
+          background-size: cover;
+          background-repeat: no-repeat;
+          background-position: center;
+          opacity: 0.8;  /* Adjust opacity here */
+          z-index: 0;">
+        </div>
+        <!-- Content layer -->
+        <div class="pt-5 position-relative" style="z-index: 1;">
+          <div class="d-flex justify-content-between align-items-start">
+            <div class="pt-5">
+              <h1>Shyam Transport Company</h1>
+              <p style="padding:0px; margin:0px;"><span class="fw-bold" style="font-weight: 600;">Mumbai: </span>Room No. Cen-844 Part III Ganesh Murti Nagar, Near Navy Nagar <br> Colaba, Mumbai -400 005</p>
+              <p style="padding:0px; margin:0px;"><span class="fw-bold" style="font-weight: 600;">Radheshyam: </span></p>
+              <p><span class="fw-bold" style="font-weight: 600;">Mob:</span> +91 9869555680, +91 8108031062 <br><span class="fw-bold">Email:</span> radeshaym588@gmail.com</p>
+              <p style="padding:0px; margin:0px;"><span class="fw-bold" style="font-weight: 600;">Delhi: </span>8749/1,ff,db Gupta road Paharganj New Delhi 110055 </p>
+              <p style="padding:0px; margin:0px;"><span class="fw-bold" style="font-weight: 600;">Amit Kumar: </span></p>
+              <p><span class="fw-bold" style="font-weight: 600;">Mob:</span> +91 9910874881, +91 8076740363 </p>
+              <p>(CDA Recognized, Government Registered <br> Transport Contractor & Commission Agent)</p>
+            </div>
+            <div>
+              <h5 class="fw-bold">Regd. No. 12612400000003969464</h5>
+              <h5 class="fw-bold">GSTIN. 27ALWPD2794B1ZW</h5>
+            </div>
           </div>
         </div>
-      </div>
+
     </div>
+
     
-    <div class="d-md-flex justify-content-between align-items-center px-5 my-2">
+    <div class="d-md-flex justify-content-between align-items-center px-5  pt-4">
       <div>
         <h2 class="display-6 fw-bold">Quotation</h2>
       </div>
       <div class="mt-5 mt-md-0">
         <ul class="list-unstyled">
-          <li><span class="fw-semibold">Date of Booking:</span> <span style="font-weight: 600;">${moment().format('DD MMM, YYYY')}</span></li>
+          <li><span class="fw-semibold">Date of Booking:</span> <span style="font-weight: 600;">${moment().format(
+            'DD MMM, YYYY',
+          )}</span></li>
           <li><span class="fw-semibold">Date of Loading:</span> <span style="font-weight: 600;">${loadingDate}</span></li>
         </ul>
       </div>
@@ -112,14 +136,17 @@ function GeneratedPdf({route}) {
         <tbody>
           ${tableString}
     
-          ${tax != 0 ?
-            `<tr>
+          ${
+            tax != 0
+              ? `<tr>
                 <th></th>
                 <td></td>
                 <td></td>
                 <td class="fs-5 fw-bold" style="font-weight: 300;">Tax/GST</td>
                 <td class="fs-5 fw-bold" style="font-weight: 300;">&#8377; ${tax}</td>
-              </tr>` : ''}
+              </tr>`
+              : ''
+          }
     
     
           <tr>
@@ -172,21 +199,18 @@ function GeneratedPdf({route}) {
 
     console.log(file);
     setUrl(file.filePath);
-    
   };
   const handelShare = async () => {
-    
-  
     try {
       const pdfBase64 = await RNFS.readFile(url, 'base64');
-  
+
       const shareOptions = {
         url: `data:application/pdf;base64,${pdfBase64}`,
-        filename: 'Quotations', 
+        filename: 'Quotations',
       };
-  
+
       const result = await Share.open(shareOptions);
-  
+
       if (result.app) {
         console.log(`Shared via ${result.app}`);
       } else {
@@ -196,12 +220,10 @@ function GeneratedPdf({route}) {
       console.error('Error sharing:', error);
     }
   };
-  
 
   useEffect(() => {
-    storage.setInt('invoice_number', storage.getInt('invoice_number') + 1); 
+    storage.setInt('invoice_number', storage.getInt('invoice_number') + 1);
     createPDF();
-   
   }, []);
 
   return (
@@ -228,6 +250,10 @@ function GeneratedPdf({route}) {
       )}
       <View style={styles.button_container}>
         <Button
+          icon={
+            <Icon style={{marginLeft: 5}} name="share" size={25} color="#fff" />
+          }
+          iconRight
           title="Share"
           color="secondary"
           containerStyle={styles.btn}

@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { Icon } from 'react-native-elements'
+
 
 function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
   const [item, setItem] = useState(row.item);
@@ -29,7 +31,6 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
 
     toggleModel();
   };
-  
 
   return (
     <Modal
@@ -52,20 +53,20 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             }}>
             <TouchableOpacity
               onPress={() => {
-                
                 let filtered_date = tableData.filter(
                   item => item.id !== row.id,
                 );
-                
-                filtered_date.map((item, index)=>{
-                  item.id= index+1
-                })
+
+                filtered_date.map((item, index) => {
+                  item.id = index + 1;
+                });
                 console.log(filtered_date);
-                setIsOpen(!isOpen)
+                setIsOpen(!isOpen);
                 setTableData(filtered_date);
               }}>
-                <Text>Delete</Text>
-              {/* <Icon name="trash" size={25} color="#900" /> */}
+             
+              <Icon name="delete" size={25} color="#900" />
+              <Text>Delete</Text>
             </TouchableOpacity>
             <Text style={{fontSize: 16, fontWeight: 'bold', marginBottom: 20}}>
               Item
@@ -105,7 +106,6 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             defaultValue={row.item}
           />
           <Input
-          
             label={'Quantity:'}
             onChangeText={value => setQuant(value)}
             labelStyle={{
@@ -136,7 +136,6 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             defaultValue={row.qty}
           />
           <Input
-            
             label={'Rate:'}
             onChangeText={value => setRate(value)}
             labelStyle={{
