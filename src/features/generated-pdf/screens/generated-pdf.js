@@ -103,7 +103,7 @@ function GeneratedPdf({route}) {
       </div>
       <div class="mt-5 mt-md-0">
         <ul class="list-unstyled">
-          <li><span class="fw-semibold">Date of Booking:</span> <span style="font-weight: 600;">${moment().format(
+          <li><span class="fw-semibold">Date:</span> <span style="font-weight: 600;">${moment().format(
             'DD MMM, YYYY',
           )}</span></li>
           <li><span class="fw-semibold">Date of Loading:</span> <span style="font-weight: 600;">${loadingDate}</span></li>
