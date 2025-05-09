@@ -34,45 +34,7 @@ function Quote() {
   const [loadingDate, setLoadingDate] = useState(
     moment().format('DD MMM, YYYY'),
   );
-  data = [
-    {
-      id: 1,
-      item: 'Packing Material Charges',
-      qty: 1,
-      rate: 7000,
-    },
-    {
-      id: 2,
-      item: 'Labour for Packing and Loading',
-      qty: 1,
-      rate: 6000,
-    },
-    {
-      id: 3,
-      item: 'Transportation Charges',
-      qty: 1,
-      rate: 7000,
-    },
-    {
-      id: 4,
-      item: 'Unloading Charges',
-      qty: 1,
-      rate: 3000,
-    },
-    {
-      id: 5,
-      item: 'Bill Charge',
-      qty: 1,
-      rate: 4500,
-    },
-
-    {
-      id: 6,
-      item: 'Transit insurance free for 2 lakh',
-      qty: 1,
-      rate: 0.0,
-    },
-  ];
+  data = [];
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -96,7 +58,7 @@ function Quote() {
       return `<tr>
           <td>${item.id}</td>
           <td>${item.item}</td>
-          <td>${item.qty}</td>
+          <td class="text-center align-middle" >${item.qty}</td>
           <td>${item.rate}</td>
           <td>${item.qty * item.rate}</td>
         </tr>`;
