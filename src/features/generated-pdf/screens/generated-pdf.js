@@ -32,6 +32,7 @@ function GeneratedPdf({route}) {
     address,
     tax,
     tableString,
+    is_billing,
   } = route.params;
 
   // const exampleImageUri = Image.resolveAssetSource(background_image).uri;
@@ -99,7 +100,9 @@ function GeneratedPdf({route}) {
     
     <div class="d-md-flex justify-content-between align-items-center px-5  pt-4">
       <div>
-        <h2 class="display-6 fw-bold">Quotation</h2>
+        <h2 class="display-6 fw-bold">${
+          is_billing ? 'Bill' : 'Quotation'
+        }</h2>
       </div>
       <div class="mt-5 mt-md-0">
         <ul class="list-unstyled">
@@ -200,26 +203,47 @@ function GeneratedPdf({route}) {
     console.log(file);
     setUrl(file.filePath);
   };
-  const handelShare = async () => {
+  const handleShare = async () => {
     try {
-      const pdfBase64 = await RNFS.readFile(url, 'base64');
-
       const shareOptions = {
-        url: `data:application/pdf;base64,${pdfBase64}`,
-        filename: 'Quotations',
+        url: `file://${url}`,
+        type: 'application/pdf',
+        filename: is_billing ? 'Bill.pdf' : 'Quotation.pdf',
+        failOnCancel: false, // ✅ VERY IMPORTANT
       };
 
       const result = await Share.open(shareOptions);
 
-      if (result.app) {
+      if (result?.app) {
         console.log(`Shared via ${result.app}`);
       } else {
         console.log('Shared successfully');
       }
     } catch (error) {
+      // This will now rarely trigger
       console.error('Error sharing:', error);
     }
   };
+  // const handelShare = async () => {
+  //   try {
+  //     const pdfBase64 = await RNFS.readFile(url, 'base64');
+
+  //     const shareOptions = {
+  //       url: `data:application/pdf;base64,${pdfBase64}`,
+  //       filename: is_billing ? 'Bill' : 'Quotation',
+  //     };
+
+  //     const result = await Share.open(shareOptions);
+
+  //     if (result.app) {
+  //       console.log(`Shared via ${result.app}`);
+  //     } else {
+  //       console.log('Shared successfully');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error sharing:', error);
+  //   }
+  // };
 
   useEffect(() => {
     storage.setInt('invoice_number', storage.getInt('invoice_number') + 1);
@@ -257,7 +281,7 @@ function GeneratedPdf({route}) {
           title="Share"
           color="secondary"
           containerStyle={styles.btn}
-          onPress={handelShare}></Button>
+          onPress={handleShare}></Button>
       </View>
     </View>
   );

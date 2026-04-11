@@ -4,7 +4,7 @@ import React from 'react';
 import home from '../../features/home/screens/home';
 import Quote from '../../features/quote/quote';
 import Settings from '../../features/settings/screens/settengs';
-import { Header } from '@rneui/base';
+import {Header} from '@rneui/base';
 import GeneratedPdf from '../../features/generated-pdf/screens/generated-pdf';
 
 function NavigationStack() {
@@ -12,10 +12,28 @@ function NavigationStack() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="home" component={home}  options={{headerShown: false}}></Stack.Screen>
-        <Stack.Screen name="quote" component={Quote} options={{headerTitle:"Quotation"}}></Stack.Screen>
-        <Stack.Screen name='settings' component={Settings} options={{headerTitle:"Settings"}}></Stack.Screen>
-        <Stack.Screen name='generated_pdf' component={GeneratedPdf} options={{headerTitle:"Generated PDF"}}></Stack.Screen>
+        <Stack.Screen
+          name="home"
+          component={home}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="quote"
+          component={Quote}
+          options={({route}) => ({
+            title: route.params?.is_billing ? 'Billing' : 'Quotation',
+          })}
+        />
+        <Stack.Screen
+          name="settings"
+          component={Settings}
+          options={{headerTitle: 'Settings'}}
+        />
+        <Stack.Screen
+          name="generated_pdf"
+          component={GeneratedPdf}
+          options={{headerTitle: 'Generated PDF'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

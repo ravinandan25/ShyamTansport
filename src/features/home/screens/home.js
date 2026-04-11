@@ -1,26 +1,22 @@
 import {useNavigation} from '@react-navigation/native';
 import {Button} from '@rneui/themed';
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
-import { storage } from '../../../../index'
+import {storage} from '../../../../index';
 
 function Home() {
- 
   const navigation = useNavigation();
-  
+
   useEffect(() => {
-    const initial_count =storage.getInt('invoice_number')
-    if(initial_count==null){
-      storage.setInt('invoice_number',0)
+    const initial_count = storage.getInt('invoice_number');
+    if (initial_count == null) {
+      storage.setInt('invoice_number', 0);
     }
-    console.log("================INITIAL COUNT");
+    console.log('================INITIAL COUNT');
     console.log(initial_count);
-    console.log("=============================");
-    
-  }, [])
-  
-  
-  
+    console.log('=============================');
+  }, []);
+
   return (
     <View style={styles.container}>
       <Button
@@ -28,14 +24,24 @@ function Home() {
         color="secondary"
         containerStyle={styles.btn}
         onPress={() => {
-          navigation.navigate('quote');
-        }}></Button>
+          navigation.navigate('quote', {is_billing: false});
+        }}
+      />
+      <Button
+        title="Billing"
+        color="primary"
+        containerStyle={styles.btn}
+        onPress={() => {
+          navigation.navigate('quote', {is_billing: true});
+        }}
+      />
       <Button
         title="Settings"
         containerStyle={styles.btn}
         onPress={() => {
           navigation.navigate('settings');
-        }}></Button>
+        }}
+      />
     </View>
   );
 }

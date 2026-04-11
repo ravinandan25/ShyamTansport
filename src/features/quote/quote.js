@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {Input} from '@rneui/base';
 import {Button, Text, useTheme} from '@rneui/themed';
 import React, {useEffect, useState} from 'react';
@@ -16,10 +16,12 @@ import CustomAddModal from '../../components/quote/custom-add-modaj';
 import DateTimePicker from 'react-native-ui-datepicker';
 import dayjs from 'dayjs';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { Icon } from 'react-native-elements'
+import {Icon} from 'react-native-elements';
 import moment from 'moment';
 
 function Quote() {
+  const route = useRoute();
+  const {is_billing} = route.params;
   const navigation = useNavigation();
   const {theme} = useTheme();
   const [tableData, setTableData] = useState([]);
@@ -34,7 +36,7 @@ function Quote() {
   const [loadingDate, setLoadingDate] = useState(
     moment().format('DD MMM, YYYY'),
   );
-  data = [];
+  const data = [];
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -66,7 +68,6 @@ function Quote() {
 
     tableRowsHTML = data.join('');
     setTableString(tableRowsHTML);
-    
   };
 
   useEffect(() => {
@@ -223,7 +224,6 @@ function Quote() {
                   height: 50,
                   width: 50,
                 }}>
-               
                 <Icon name="add" size={20} color="#000" />
               </TouchableOpacity>
             </View>
@@ -326,7 +326,7 @@ function Quote() {
       </KeyboardAvoidingView>
       <View style={styles.button_container}>
         <Button
-          title="Generate Quotation"
+          title={is_billing ? 'Generate Bill' : 'Generate Quotation'}
           color="secondary"
           containerStyle={styles.btn}
           onPress={() => {
@@ -340,14 +340,17 @@ function Quote() {
               address: address,
               tax: tax,
               tableString: tableString,
+              is_billing: is_billing,
             });
-          }}></Button>
+          }}
+        />
       </View>
       <CustomAddModal
         setTableData={setTableData}
         tableData={tableData}
         isOpen={isVisible}
-        setIsOpen={setIsVisible}></CustomAddModal>
+        setIsOpen={setIsVisible}
+      />
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
