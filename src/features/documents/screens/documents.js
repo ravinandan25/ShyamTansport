@@ -1,4 +1,4 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {Button, Icon, Text, useTheme} from '@rneui/themed';
 import moment from 'moment';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -89,10 +89,14 @@ function Documents() {
   const [search, setSearch] = useState('');
   const [query, setQuery] = useState('');
   const [docs, setDocs] = useState([]);
-  const [nextOffset, setNextOffset] = useState(null);
+  const [nextCursor, setNextCursor] = useState(null);
   const [status, setStatus] = useState('loading'); // loading | refreshing | ready | error
   const [loadingMore, setLoadingMore] = useState(false);
-  const requestId = useRef(0);
+  const [loadMoreFailed, setLoadMoreFailed] = useState(false);
+  // In-flight request, cancelled when the filters change or the screen closes.
+  const controller = useRef(null);
+  // Ref, not state: onEndReached can fire twice before a state update lands.
+  const fetchingMore = useRef(false);
 
   // Wait until typing pauses before searching.
   useEffect(() => {
@@ -100,20 +104,28 @@ function Documents() {
     return () => clearTimeout(timer);
   }, [search]);
 
+  // First page only; later pages load as the user scrolls (loadMore).
   const load = useCallback(
     async ({refreshing = false} = {}) => {
-      const id = ++requestId.current;
+      controller.current?.abort();
+      const request = new AbortController();
+      controller.current = request;
+      fetchingMore.current = false;
+      setLoadingMore(false);
+      setLoadMoreFailed(false);
       setStatus(refreshing ? 'refreshing' : 'loading');
       try {
-        const data = await fetchDocumentsAPI({type, search: query});
-        if (id === requestId.current) {
-          setDocs(data.results);
-          setNextOffset(data.next_offset);
-          setStatus('ready');
-        }
+        const data = await fetchDocumentsAPI({
+          type,
+          search: query,
+          signal: request.signal,
+        });
+        setDocs(data.results);
+        setNextCursor(data.next_cursor);
+        setStatus('ready');
       } catch (err) {
-        console.log(err);
-        if (id === requestId.current) {
+        if (!request.signal.aborted) {
+          console.log(err);
           setStatus('error');
         }
       }
@@ -121,33 +133,41 @@ function Documents() {
     [type, query],
   );
 
-  // Reload whenever the screen is shown (e.g. after creating a document) or filters change.
-  useFocusEffect(
-    useCallback(() => {
-      load();
-    }, [load]),
-  );
+  // Load when the screen opens and whenever the tab or search changes. Coming back
+  // from a document keeps the list and scroll position; pull down to refresh.
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  useEffect(() => () => controller.current?.abort(), []);
 
   const loadMore = async () => {
-    if (nextOffset === null || loadingMore || status !== 'ready') {
+    if (!nextCursor || fetchingMore.current || status !== 'ready') {
       return;
     }
-    const id = requestId.current;
+    fetchingMore.current = true;
+    const request = controller.current;
     setLoadingMore(true);
+    setLoadMoreFailed(false);
     try {
       const data = await fetchDocumentsAPI({
         type,
         search: query,
-        offset: nextOffset,
+        cursor: nextCursor,
+        signal: request?.signal,
       });
-      if (id === requestId.current) {
-        setDocs(prev => [...prev, ...data.results]);
-        setNextOffset(data.next_offset);
-      }
+      setDocs(prev => [...prev, ...data.results]);
+      setNextCursor(data.next_cursor);
     } catch (err) {
-      console.log(err);
+      if (!request?.signal.aborted) {
+        console.log(err);
+        setLoadMoreFailed(true);
+      }
     } finally {
-      setLoadingMore(false);
+      if (!request?.signal.aborted) {
+        fetchingMore.current = false;
+        setLoadingMore(false);
+      }
     }
   };
 
@@ -265,7 +285,16 @@ function Documents() {
               style={styles.footerSpinner}
               color={theme.colors.secondary}
             />
-          ) : null
+          ) : loadMoreFailed ? (
+            <Pressable
+              onPress={loadMore}
+              style={styles.footerRetry}
+              accessibilityRole="button">
+              <Text style={styles.footerRetryText}>
+                Couldn’t load more. Tap to retry.
+              </Text>
+            </Pressable>
+          ) : <View style={{height: 20}} />
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.4}
@@ -433,6 +462,15 @@ const makeStyles = ({ui, cardShadow}) =>
     retryButton: {
       borderRadius: 12,
       paddingHorizontal: 24,
+    },
+    footerRetry: {
+      alignItems: 'center',
+      paddingVertical: 16,
+    },
+    footerRetryText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: ui.secondary,
     },
     footerSpinner: {
       marginVertical: 16,

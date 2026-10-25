@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, Pressable, StyleSheet, View} from 'react-native';
+import {KeyboardAvoidingView, Modal, Pressable, StyleSheet} from 'react-native';
 import {useAppTheme} from '../../theme/theme';
 
 // Drop-in replacement for react-native-modal, which relies on APIs
@@ -14,10 +14,12 @@ function AppModal({isVisible, onBackButtonPress, onBackdropPress, children}) {
       statusBarTranslucent
       navigationBarTranslucent
       onRequestClose={onBackButtonPress}>
-      <View style={styles.container}>
+      {/* The modal window is edge-to-edge, so Android doesn't resize it for the
+          keyboard; pad it ourselves so the dialog moves up above the keyboard. */}
+      <KeyboardAvoidingView behavior="padding" style={styles.container}>
         <Pressable style={StyleSheet.absoluteFill} onPress={onBackdropPress} />
         {children}
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

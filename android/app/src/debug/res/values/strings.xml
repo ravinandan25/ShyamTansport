@@ -1,0 +1,4 @@
+<resources>
+    <!-- Debug builds install as a separate app (applicationIdSuffix ".debug"). -->
+    <string name="app_name">Shyam Transport Dev</string>
+</resources>
