@@ -67,6 +67,28 @@ react {
 def enableProguardInReleaseBuilds = true
 
 /**
+ * Release signing comes from ~/.gradle/gradle.properties; see signingConfigs.release.
+ */
+def releaseSigningKeys = [
+
+]
+def hasReleaseSigning = releaseSigningKeys.every { project.hasProperty(it) }
+
+// Fail early with instructions instead of a cryptic signing error.
+gradle.taskGraph.whenReady { graph ->
+    def buildsRelease = graph.allTasks.any {
+        it.project == project && it.name.toLowerCase().contains('release') &&
+            (it.name.startsWith('assemble') || it.name.startsWith('bundle') || it.name.startsWith('install'))
+    }
+    if (buildsRelease && !hasReleaseSigning) {
+        def missing = releaseSigningKeys.findAll { !project.hasProperty(it) }
+        throw new GradleException(
+            "Release signing is not set up. Add these to ~/.gradle/gradle.properties: " +
+            missing.join(', ') + " (see signingConfigs.release in android/app/build.gradle).")
+    }
+}
+
+/**
  * The preferred build flavor of JavaScriptCore (JSC)
  *
  * For example, to use the international variant, you can use:
@@ -89,7 +111,7 @@ android {
         applicationId "com.shyamtransport"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 2
+        versionCode 3
         versionName "1.0.0"
     }
     signingConfigs {
@@ -99,11 +121,18 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        // Release key settings live in ~/.gradle/gradle.properties (never in git):
+        //   SHYAM_RELEASE_STORE_FILE=/absolute/path/to/shyam-transport-release.keystore
+        //   SHYAM_RELEASE_STORE_PASSWORD=...
+        //   SHYAM_RELEASE_KEY_ALIAS=shyam-transport
+        //   SHYAM_RELEASE_KEY_PASSWORD=...
         release {
-            storeFile file('my-release-key.keystore')
-            storePassword 'ravinandan'
-            keyAlias 'my-key-alias-2'
-            keyPassword 'ravinandan'
+            if (hasReleaseSigning) {
+                storeFile file(SHYAM_RELEASE_STORE_FILE)
+                storePassword SHYAM_RELEASE_STORE_PASSWORD
+                keyAlias SHYAM_RELEASE_KEY_ALIAS
+                keyPassword SHYAM_RELEASE_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
@@ -113,8 +142,6 @@ android {
             applicationIdSuffix ".debug"
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             // Drop unused images/resources too (needs minifyEnabled).
