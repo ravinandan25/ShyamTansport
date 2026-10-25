@@ -11,6 +11,7 @@ import {storage} from '../../../..';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import {Icon} from '@rneui/themed';
+import {inrInWords} from 'inr-words';
 
 function GeneratedPdf({route}) {
   const {
@@ -22,11 +23,16 @@ function GeneratedPdf({route}) {
     address,
     tax,
     tableString,
+    is_billing,
+    number,
   } = route.params;
 
   // const exampleImageUri = Image.resolveAssetSource(background_image).uri;
 
   const [url, setUrl] = useState('');
+
+  let totalInWords = inrInWords(total);
+  // One Hundred Forty Four Rupees Only
 
   let options = {
     html: `<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -57,7 +63,7 @@ function GeneratedPdf({route}) {
           position: absolute;
           top: 0; left: 0;
           width: 100%; height: 100%;
-          background-image: url('https://shyamtransportbucket.s3.ap-south-1.amazonaws.com/team/img1.jpg');
+          background-image: url('https://drive.google.com/uc?id=16nBYgGrvsRYL6SXjhpO78pK8aNZwlogx');
           background-size: cover;
           background-repeat: no-repeat;
           background-position: center;
@@ -86,13 +92,18 @@ function GeneratedPdf({route}) {
 
     </div>
 
-    
-    <div class="d-md-flex justify-content-between align-items-center px-5  pt-4">
+    <div class="d-md-flex justify-content-between align-items-start mt-3">
+    <div class=" px-5  pt-0" >
       <div>
-        <h2 class="display-6 fw-bold">Quotation</h2>
+        <h4 class="display-6 fw-bold">${
+          is_billing ? 'Invoice' : 'Quotation'
+        }</h4>
       </div>
       <div class="mt-5 mt-md-0">
         <ul class="list-unstyled">
+        <li><span class="fw-semibold">${
+          is_billing ? 'Invoice' : 'Quotation'
+        } Number</span>: <span  style="font-weight: 600;">${number}</span></li> 
           <li><span class="fw-semibold">Date:</span> <span style="font-weight: 600;">${moment().format(
             'DD MMM, YYYY',
           )}</span></li>
@@ -103,13 +114,18 @@ function GeneratedPdf({route}) {
     
     <div class="d-md-flex justify-content-between px-5">
       <div>
-        <p class="fw-bold fs-5">Quotation To</p>
+         <div>
+        <h4 class="display-6 fw-bold">${
+          is_billing ? 'Invoice' : 'Quotation'
+        } To</h4>
+      </div>
         <h6>${customerName}</h6>
         <ul class="list-unstyled">
           <li style="max-width:200px; ">${address}</li>
           ${phone && `<li><h6>Phone: +91 ${phone} </h6></li>`}
         </ul>
       </div>
+    </div>
     </div>
     
     <div class="px-5">
@@ -146,8 +162,39 @@ function GeneratedPdf({route}) {
             <td class="fs-5 fw-bold" style="font-weight: 600;">Grand-Total</td>
             <td class="fs-5 fw-bold" style="font-weight: 600;">&#8377; ${total}</td>
           </tr>
+          
         </tbody>
       </table>
+     
+<div style="position:relative">
+            
+            <p class=" fw-bold" style="font-weight: 600; display:flex; flex-direction:row; justify-content: end; position:absolute; right:0;
+            top:-40 ">${totalInWords} only</p>
+        </div>
+    </div>
+    <div class="px-5">
+      <div class="row mt-4 mb-5">
+          <div class="col-md-6 mt-5 mt-md-0  ">
+             <h5 class="fw-bold mb-2">Bank Details:</h5>
+             <div>
+             <p>
+             Shyam Transport Company <br>
+             A/c: 6168061094 <br>
+             IFSC: IDBI000N123 <br>
+             Branch: Navy Nagar Colaba Mumbai - 05
+             </p>
+             </div>
+          </div>
+          <div class="col-md-6 mt-5 mt-md-0 d-md-flex  flex-column align-items-end justify-content-center">
+            <div class="d-md-flex justify-content-center flex-column align-items-center" >
+              <img src="https://shyamtransportbucket.s3.ap-south-1.amazonaws.com/team/Gemini_Generated_Image_jli8n2jli8n2jli8.png" style="height:180px" />
+             <div style="height:2px;width:200px; background-color:black"></div>
+            
+              <p class="mt-2">Authorized Signatory</p>
+            </div>
+          </div>
+      </div>
+
     </div>
     
     <div class="px-5">
@@ -180,7 +227,7 @@ function GeneratedPdf({route}) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     `,
-    fileName: `quotation-${moment().format('DD-MM-YYYY-HH-mm-ss')}`,
+    fileName: is_billing ? `${number}` : `${number}`,
     directory: 'Downloads',
   };
 
@@ -190,26 +237,47 @@ function GeneratedPdf({route}) {
     console.log(file);
     setUrl(file.filePath);
   };
-  const handelShare = async () => {
+  const handleShare = async () => {
     try {
-      const pdfBase64 = await RNFS.readFile(url, 'base64');
-
       const shareOptions = {
-        url: `data:application/pdf;base64,${pdfBase64}`,
-        filename: 'Quotations',
+        url: `file://${url}`,
+        type: 'application/pdf',
+        filename: is_billing ? `${number}.pdf` : `${number}.pdf`,
+        failOnCancel: false, // ✅ VERY IMPORTANT
       };
 
       const result = await Share.open(shareOptions);
 
-      if (result.app) {
+      if (result?.app) {
         console.log(`Shared via ${result.app}`);
       } else {
         console.log('Shared successfully');
       }
     } catch (error) {
+      // This will now rarely trigger
       console.error('Error sharing:', error);
     }
   };
+  // const handelShare = async () => {
+  //   try {
+  //     const pdfBase64 = await RNFS.readFile(url, 'base64');
+
+  //     const shareOptions = {
+  //       url: `data:application/pdf;base64,${pdfBase64}`,
+  //       filename: is_billing ? 'Bill' : 'Quotation',
+  //     };
+
+  //     const result = await Share.open(shareOptions);
+
+  //     if (result.app) {
+  //       console.log(`Shared via ${result.app}`);
+  //     } else {
+  //       console.log('Shared successfully');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error sharing:', error);
+  //   }
+  // };
 
   useEffect(() => {
     storage.setInt('invoice_number', storage.getInt('invoice_number') + 1);
@@ -249,7 +317,7 @@ function GeneratedPdf({route}) {
           title="Share"
           color="secondary"
           containerStyle={styles.btn}
-          onPress={handelShare}></Button>
+          onPress={handleShare}></Button>
       </View>
     </View>
   );

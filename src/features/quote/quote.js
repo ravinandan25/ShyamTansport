@@ -1,4 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {Input} from '@rneui/base';
 import {Button, Text, useTheme} from '@rneui/themed';
 import React, {useEffect, useState} from 'react';
@@ -15,8 +15,12 @@ import CustomAddModal from '../../components/quote/custom-add-modaj';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Icon} from '@rneui/themed';
 import moment from 'moment';
+import {createInvoiceAPI, createQuotationAPI} from './store/api';
+
 
 function Quote() {
+  const route = useRoute();
+  const {is_billing} = route.params;
   const navigation = useNavigation();
   const {theme} = useTheme();
   const [tableData, setTableData] = useState([]);
@@ -68,6 +72,50 @@ function Quote() {
       .join('');
     setTableString(tableRowsHTML);
   }, [tableData, tax]);
+
+  const generatePayload = async () => {
+    try {
+      let payload = {
+        customer_name: customerName,
+        customer_address: address,
+        customer_phone: phone,
+
+        loading_date: moment(loadingDate, 'DD MMM, YYYY').format('YYYY-MM-DD'),
+
+        tax: parseFloat(tax || 0),
+
+        items: tableData.map(item => ({
+          description: item.item,
+          quantity: item.qty,
+          rate: item.rate,
+        })),
+      };
+
+      console.log('PAYLOAD:', payload);
+
+      const res = is_billing
+        ? await createInvoiceAPI(payload)
+        : await createQuotationAPI(payload);
+
+      console.log('SUCCESS:', res);
+
+      navigation.navigate('generated_pdf', {
+        table: tableData,
+        total: total,
+        loadingDate: loadingDate,
+        customerName: customerName,
+        phone: phone,
+        address: address,
+        tax: tax,
+        tableString: tableString,
+        is_billing: is_billing,
+        number: is_billing ? res.invoice_number : res?.quotation_number,
+      });
+    } catch (err) {
+      console.log(err);
+      alert('Failed to create quotation');
+    }
+  };
 
   return (
     <View
@@ -204,7 +252,6 @@ function Quote() {
                   height: 50,
                   width: 50,
                 }}>
-               
                 <Icon name="add" size={20} color="#000" />
               </TouchableOpacity>
             </View>
@@ -307,28 +354,21 @@ function Quote() {
       </KeyboardAvoidingView>
       <View style={styles.button_container}>
         <Button
-          title="Generate Quotation"
+          title={is_billing ? 'Generate Bill' : 'Generate Quotation'}
           color="secondary"
           containerStyle={styles.btn}
           onPress={() => {
             // console.log(tableData);
-            navigation.navigate('generated_pdf', {
-              table: tableData,
-              total: total,
-              loadingDate: loadingDate,
-              customerName: customerName,
-              phone: phone,
-              address: address,
-              tax: tax,
-              tableString: tableString,
-            });
-          }}></Button>
+            generatePayload();
+          }}
+        />
       </View>
       <CustomAddModal
         setTableData={setTableData}
         tableData={tableData}
         isOpen={isVisible}
-        setIsOpen={setIsVisible}></CustomAddModal>
+        setIsOpen={setIsVisible}
+      />
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
