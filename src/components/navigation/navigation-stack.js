@@ -16,10 +16,12 @@ import Login from '../../features/auth/screens/login';
 import ForgotPin from '../../features/auth/screens/forgot-pin';
 import {useAuth} from '../../features/auth/auth-context';
 import {useAppTheme} from '../../theme/theme';
+import {useTranslation} from 'react-i18next';
 
 const Stack = createNativeStackNavigator();
 
 function NavigationStack() {
+  const {t} = useTranslation();
   const {isSignedIn} = useAuth();
   const {ui, isDark} = useAppTheme();
 
@@ -65,31 +67,31 @@ function NavigationStack() {
               component={Quote}
               options={({route}) => ({
                 title: route.params?.is_billing
-                  ? 'New Invoice'
-                  : 'New Quotation',
+                  ? t('nav.newInvoice')
+                  : t('nav.newQuotation'),
               })}
             />
             <Stack.Screen
               name="settings"
               component={Settings}
-              options={{headerTitle: 'Settings'}}
+              options={{headerTitle: t('nav.settings')}}
             />
             <Stack.Screen
               name="edit_name"
               component={EditName}
-              options={{title: 'Edit name'}}
+              options={{title: t('nav.editName')}}
             />
             <Stack.Screen
               name="generated_pdf"
               component={GeneratedPdf}
               options={({route}) => ({
-                title: route.params?.number ?? 'Document',
+                title: route.params?.number ?? t('nav.document'),
               })}
             />
             <Stack.Screen
               name="documents"
               component={Documents}
-              options={{title: 'Documents'}}
+              options={{title: t('nav.documents')}}
             />
             <Stack.Screen
               name="document_viewer"
@@ -107,7 +109,7 @@ function NavigationStack() {
             <Stack.Screen
               name="forgot_pin"
               component={ForgotPin}
-              options={{title: 'Forgot PIN'}}
+              options={{title: t('nav.forgotPin')}}
             />
           </>
         )}

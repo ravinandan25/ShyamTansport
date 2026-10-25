@@ -1,6 +1,6 @@
 {
   "name": "ShyamTransport",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -17,8 +17,10 @@
     "@rneui/base": "^5.0.0",
     "@rneui/themed": "^5.0.0",
     "axios": "^1.15.1",
+    "i18next": "26.5.11",
     "moment": "^2.30.1",
     "react": "19.3.0",
+    "react-i18next": "17.1.9",
     "react-native": "0.88.0",
     "react-native-blob-util": "^0.25.1",
     "react-native-config": "1.7.2",

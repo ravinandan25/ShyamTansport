@@ -11,10 +11,13 @@ import {
 import FormField from '../../../components/common/form-field';
 import {useStyles} from '../../../theme/theme';
 import {useAuth} from '../../auth/auth-context';
+import {useTranslation} from 'react-i18next';
+import {serverMessage} from '../../../i18n';
 
 const MAX_LENGTH = 100; // StaffMember.name max_length on the server
 
 function EditName() {
+  const {t} = useTranslation();
   const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const {user, updateName} = useAuth();
@@ -25,7 +28,7 @@ function EditName() {
   const handleSave = async () => {
     const trimmed = name.trim().replace(/\s+/g, ' ');
     if (!trimmed) {
-      setError('Enter your name');
+      setError(t('editName.enterName'));
       return;
     }
     if (trimmed === user?.name) {
@@ -40,8 +43,8 @@ function EditName() {
     } catch (err) {
       setError(
         err?.response
-          ? err.response.data?.message ?? 'Could not save. Please try again.'
-          : 'Could not reach the server. Check your internet connection.',
+          ? serverMessage(err, 'editName.saveFailed')
+          : t('common.serverUnreachable'),
       );
     } finally {
       setSaving(false);
@@ -57,8 +60,8 @@ function EditName() {
         contentContainerStyle={styles.content}>
         <View style={styles.card}>
           <FormField
-            label="Name"
-            placeholder="Your name"
+            label={t('settings.name')}
+            placeholder={t('editName.namePlaceholder')}
             textContentType="name"
             autoCapitalize="words"
             maxLength={MAX_LENGTH}
@@ -71,13 +74,10 @@ function EditName() {
             onSubmitEditing={handleSave}
             error={error}
           />
-          <Text style={styles.hint}>
-            Shown on the quotations and invoices you create. Your mobile number
-            can only be changed by the office.
-          </Text>
+          <Text style={styles.hint}>{t('editName.hint')}</Text>
 
           <Button
-            title="Save"
+            title={t('common.save')}
             color="secondary"
             raised={false}
             loading={saving}

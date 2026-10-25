@@ -19,6 +19,8 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {useAppTheme, useStyles} from '../../theme/theme';
 import {formatRupees} from '../../utils/currency';
 import {createInvoiceAPI, createQuotationAPI} from './store/api';
+import {useTranslation} from 'react-i18next';
+import {serverMessage} from '../../i18n';
 
 // Accepts 10-digit Indian mobile numbers, optionally written with +91, 91 or 0.
 // Returns the 10 digits, or null when the number is not valid.
@@ -29,25 +31,26 @@ const normalizePhone = value => {
   return /^[6-9]\d{9}$/.test(digits) ? digits : null;
 };
 
+// Returns translation keys (quote.errors.*), translated where they are shown.
 const validate = ({customerName, phone, address, tableData, tax}) => {
   const errors = {};
   if (!customerName.trim()) {
-    errors.customerName = 'Enter the customer’s name';
+    errors.customerName = 'quote.errors.name';
   }
   if (!phone.trim()) {
-    errors.phone = 'Enter the customer’s mobile number';
+    errors.phone = 'quote.errors.phone';
   } else if (!normalizePhone(phone)) {
-    errors.phone = 'Enter a valid 10-digit mobile number';
+    errors.phone = 'quote.errors.phoneInvalid';
   }
   if (!address.trim()) {
-    errors.address = 'Enter the pickup or delivery address';
+    errors.address = 'quote.errors.address';
   }
   if (tableData.length === 0) {
-    errors.items = 'Add at least one item';
+    errors.items = 'quote.errors.items';
   }
   const taxNum = Number(tax || 0);
   if (isNaN(taxNum) || taxNum < 0) {
-    errors.tax = 'Enter a valid amount';
+    errors.tax = 'quote.errors.tax';
   }
   return errors;
 };
@@ -66,6 +69,7 @@ function Section({title, action, children, onLayout}) {
 }
 
 function Quote() {
+  const {t} = useTranslation();
   const {ui, isDark} = useAppTheme();
   const styles = useStyles(makeStyles);
   const route = useRoute();
@@ -181,11 +185,12 @@ function Quote() {
       console.log(err);
       setDialog({
         tone: 'danger',
-        title: `Couldn’t create the ${is_billing ? 'invoice' : 'quotation'}`,
+        title: is_billing
+          ? t('quote.createFailedInvoice')
+          : t('quote.createFailedQuotation'),
         message: err?.response
-          ? err.response.data?.message ??
-            'The server could not process the request. Please try again.'
-          : 'Check your internet connection and try again.',
+          ? serverMessage(err, 'quote.serverError')
+          : t('common.checkConnection'),
       });
     } finally {
       setIsSubmitting(false);
@@ -202,38 +207,38 @@ function Quote() {
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.content}>
           <Section
-            title="Customer"
+            title={t('quote.customer')}
             onLayout={e =>
               (sectionY.current.customer = e.nativeEvent.layout.y)
             }>
             <FormField
-              label="Name"
-              placeholder="Customer name"
+              label={t('quote.name')}
+              placeholder={t('quote.namePlaceholder')}
               textContentType="name"
               value={customerName}
               onChangeText={onChange(setCustomerName, 'customerName')}
-              error={errors.customerName}
+              error={errors.customerName && t(errors.customerName)}
             />
             <FormField
-              label="Phone"
-              placeholder="10-digit mobile number"
+              label={t('quote.phone')}
+              placeholder={t('auth.mobilePlaceholder')}
               textContentType="telephoneNumber"
               inputMode="tel"
               maxLength={16}
               value={phone}
               onChangeText={onChange(setPhone, 'phone')}
-              error={errors.phone}
+              error={errors.phone && t(errors.phone)}
             />
             <FormField
-              label="Address"
-              placeholder="Pickup or delivery address"
+              label={t('quote.address')}
+              placeholder={t('quote.addressPlaceholder')}
               multiline
               value={address}
               onChangeText={onChange(setAddress, 'address')}
-              error={errors.address}
+              error={errors.address && t(errors.address)}
             />
             <FormField
-              label="Loading date"
+              label={t('quote.loadingDate')}
               value={loadingDate}
               icon="calendar-today"
               onPress={() => setDatePickerVisibility(true)}
@@ -242,7 +247,11 @@ function Quote() {
           </Section>
 
           <Section
-            title={`Items${tableData.length ? ` (${tableData.length})` : ''}`}
+            title={
+              tableData.length
+                ? t('quote.itemsCount', {count: tableData.length})
+                : t('quote.items')
+            }
             onLayout={e => (sectionY.current.items = e.nativeEvent.layout.y)}
             action={
               <Pressable
@@ -252,7 +261,7 @@ function Quote() {
                   {backgroundColor: theme.colors.secondary + '26'},
                 ]}
                 accessibilityRole="button"
-                accessibilityLabel="Add item">
+                accessibilityLabel={t('quote.addItem')}>
                 <Icon
                   name="add"
                   type="material"
@@ -260,7 +269,7 @@ function Quote() {
                   color={theme.colors.secondary}
                 />
                 <Text style={[styles.addText, {color: theme.colors.secondary}]}>
-                  Add item
+                  {t('quote.addItem')}
                 </Text>
               </Pressable>
             }>
@@ -275,13 +284,11 @@ function Quote() {
                     size={32}
                     color={errors.items ? ui.danger : ui.faint}
                   />
-                  <Text style={styles.emptyText}>No items yet</Text>
-                  <Text style={styles.emptyHint}>
-                    Tap “Add item” to add goods or services
-                  </Text>
+                  <Text style={styles.emptyText}>{t('quote.noItems')}</Text>
+                  <Text style={styles.emptyHint}>{t('quote.noItemsHint')}</Text>
                 </Pressable>
                 {errors.items && (
-                  <Text style={styles.errorText}>{errors.items}</Text>
+                  <Text style={styles.errorText}>{t(errors.items)}</Text>
                 )}
               </>
             ) : (
@@ -297,19 +304,19 @@ function Quote() {
           </Section>
 
           <Section
-            title="Summary"
+            title={t('quote.summary')}
             onLayout={e => (sectionY.current.summary = e.nativeEvent.layout.y)}>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>Subtotal</Text>
+              <Text style={styles.summaryLabel}>{t('quote.subtotal')}</Text>
               <Text style={styles.summaryValue}>{formatRupees(subtotal)}</Text>
             </View>
             <View style={styles.summaryRow}>
-              <Text style={styles.summaryLabel}>GST / Tax (₹)</Text>
+              <Text style={styles.summaryLabel}>{t('quote.tax')}</Text>
               <FormField
                 inputMode="decimal"
                 value={tax}
                 onChangeText={onChange(setTax, 'tax')}
-                error={errors.tax}
+                error={errors.tax && t(errors.tax)}
                 onFocus={() => tax === '0' && setTax('')}
                 onBlur={() => tax === '' && setTax('0')}
                 style={styles.taxField}
@@ -321,11 +328,13 @@ function Quote() {
 
       <View style={[styles.footer, {paddingBottom: 18 + insets.bottom}]}>
         <View>
-          <Text style={styles.totalLabel}>Total</Text>
+          <Text style={styles.totalLabel}>{t('quote.total')}</Text>
           <Text style={styles.totalValue}>{formatRupees(total)}</Text>
         </View>
         <Button
-          title={is_billing ? 'Generate Bill' : 'Generate Quotation'}
+          title={
+            is_billing ? t('quote.generateBill') : t('quote.generateQuotation')
+          }
           color="secondary"
           raised={false}
           loading={isSubmitting}
@@ -345,12 +354,12 @@ function Quote() {
         onClose={() => setDialog(null)}
         actions={[
           {
-            label: 'Close',
+            label: t('common.close'),
             variant: 'outline',
             onPress: () => setDialog(null),
           },
           {
-            label: 'Try again',
+            label: t('common.tryAgain'),
             onPress: () => {
               setDialog(null);
               generatePayload();

@@ -12,10 +12,13 @@ import FormField from '../../../components/common/form-field';
 import {useAppTheme, useStyles} from '../../../theme/theme';
 import {normalizePhone} from '../phone';
 import {forgotPinAPI} from '../store/api';
+import {useTranslation} from 'react-i18next';
+import {serverMessage} from '../../../i18n';
 
 // Without SMS the app can't verify who is asking, so this only sends a request:
 // the office sets a new PIN in Django admin and tells the staff member.
 function ForgotPin() {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const navigation = useNavigation();
@@ -31,11 +34,7 @@ function ForgotPin() {
     const normalized = normalizePhone(phone);
     setFormError('');
     if (!normalized) {
-      setError(
-        phone.trim()
-          ? 'Enter a valid 10-digit mobile number'
-          : 'Enter your mobile number',
-      );
+      setError(phone.trim() ? t('auth.invalidMobile') : t('auth.enterMobile'));
       return;
     }
 
@@ -46,10 +45,10 @@ function ForgotPin() {
     } catch (err) {
       setFormError(
         err?.response?.status === 429
-          ? 'Too many requests. Please try again later.'
+          ? t('auth.tooManyRequests')
           : err?.response
-          ? err.response.data?.message ?? 'Could not send the request.'
-          : 'Could not reach the server. Check your internet connection.',
+          ? serverMessage(err, 'auth.requestFailed')
+          : t('common.serverUnreachable'),
       );
     } finally {
       setSubmitting(false);
@@ -72,13 +71,10 @@ function ForgotPin() {
               color={theme.colors.primary}
             />
           </View>
-          <Text style={styles.sentTitle}>Request sent</Text>
-          <Text style={styles.sentText}>
-            If this number is registered, the office will set a new PIN and let
-            you know. Then sign in with the new PIN.
-          </Text>
+          <Text style={styles.sentTitle}>{t('auth.requestSent')}</Text>
+          <Text style={styles.sentText}>{t('auth.requestSentText')}</Text>
           <Button
-            title="Back to sign in"
+            title={t('auth.backToSignIn')}
             color="secondary"
             raised={false}
             onPress={() => navigation.goBack()}
@@ -98,9 +94,7 @@ function ForgotPin() {
       <ScrollView
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={styles.content}>
-        <Text style={styles.intro}>
-          Enter your mobile number and we’ll ask the office to reset your PIN.
-        </Text>
+        <Text style={styles.intro}>{t('auth.forgotIntro')}</Text>
 
         <View style={styles.card}>
           {!!formError && (
@@ -116,8 +110,8 @@ function ForgotPin() {
           )}
 
           <FormField
-            label="Mobile number"
-            placeholder="10-digit mobile number"
+            label={t('auth.mobileNumber')}
+            placeholder={t('auth.mobilePlaceholder')}
             inputMode="tel"
             textContentType="telephoneNumber"
             autoComplete="tel"
@@ -133,7 +127,7 @@ function ForgotPin() {
           />
 
           <Button
-            title="Request PIN reset"
+            title={t('auth.requestReset')}
             color="secondary"
             raised={false}
             loading={submitting}

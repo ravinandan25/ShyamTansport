@@ -8,13 +8,10 @@ import React, {
   useState,
 } from 'react';
 import {Appearance, useColorScheme} from 'react-native';
-import {MMKVLoader} from 'react-native-mmkv-storage';
+import {settingsStorage} from '../utils/settings-storage';
 import {palette} from './palettes';
 
 // Appearance chosen in Settings: follow the phone, or force light / dark.
-const settingsStorage = new MMKVLoader()
-  .withInstanceID('settings')
-  .initialize();
 const MODE_KEY = 'appearance';
 const MODES = ['system', 'light', 'dark'];
 

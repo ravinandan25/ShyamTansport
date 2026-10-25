@@ -3,6 +3,7 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import Modal from './app-modal';
 import {useAppTheme, useStyles} from '../../theme/theme';
+import {useTranslation} from 'react-i18next';
 
 const TONE_ICONS = {
   danger: 'error-outline',
@@ -13,6 +14,7 @@ const TONE_ICONS = {
 // Styled replacement for Alert.alert.
 // actions: [{label, onPress, variant: 'primary' | 'outline'}]
 function AppDialog({visible, tone = 'info', title, message, actions, onClose}) {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const {theme} = useTheme();
@@ -23,7 +25,7 @@ function AppDialog({visible, tone = 'info', title, message, actions, onClose}) {
       : tone === 'warning'
       ? ui.tertiary
       : theme.colors.primary;
-  const buttons = actions ?? [{label: 'OK', onPress: onClose}];
+  const buttons = actions ?? [{label: t('common.ok'), onPress: onClose}];
 
   return (
     <Modal

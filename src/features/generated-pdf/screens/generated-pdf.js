@@ -24,8 +24,10 @@ import rupeeFont from '../../../assets/fonts/rupee';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import AppDialog from '../../../components/common/app-dialog';
 import {useStyles} from '../../../theme/theme';
+import {useTranslation} from 'react-i18next';
 
 function GeneratedPdf({route}) {
+  const {t} = useTranslation();
   const styles = useStyles(makeStyles);
   const {
     table,
@@ -313,7 +315,7 @@ function GeneratedPdf({route}) {
       {url === '' ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={theme.colors.secondary} />
-          <Text style={styles.loadingText}>Preparing PDF…</Text>
+          <Text style={styles.loadingText}>{t('pdf.preparing')}</Text>
         </View>
       ) : (
         <Pdf
@@ -326,7 +328,7 @@ function GeneratedPdf({route}) {
       )}
       <View style={[styles.footer, {paddingBottom: 18 + insets.bottom}]}>
         <Button
-          title="Done"
+          title={t('common.done')}
           type="outline"
           raised={false}
           onPress={() => navigation.popToTop()}
@@ -344,7 +346,7 @@ function GeneratedPdf({route}) {
               style={styles.shareIcon}
             />
           }
-          title="Share"
+          title={t('common.share')}
           color="secondary"
           raised={false}
           disabled={url === ''}
@@ -356,8 +358,8 @@ function GeneratedPdf({route}) {
       <AppDialog
         visible={shareError}
         tone="danger"
-        title="Couldn’t share the PDF"
-        message="Please try again."
+        title={t('pdf.shareFailed')}
+        message={t('common.pleaseTryAgain')}
         onClose={() => setShareError(false)}
       />
     </View>

@@ -6,8 +6,11 @@ import AppDialog from '../../../components/common/app-dialog';
 import {useAppTheme, useStyles} from '../../../theme/theme';
 import {useAuth} from '../../auth/auth-context';
 import {useNavigation} from '@react-navigation/native';
+import {useTranslation} from 'react-i18next';
+import {LANGUAGES, setLanguage} from '../../../i18n';
 
 function InfoRow({icon, label, value, last, trailingIcon, onPress, hint}) {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const content = (
@@ -39,7 +42,7 @@ function InfoRow({icon, label, value, last, trailingIcon, onPress, hint}) {
       style={rowStyle}
       android_ripple={{color: ui.border}}
       accessibilityRole="button"
-      accessibilityLabel={`${label}: ${value}. Tap to edit.`}>
+      accessibilityLabel={t('settings.editLabel', {label, value})}>
       {content}
     </Pressable>
   ) : (
@@ -48,12 +51,13 @@ function InfoRow({icon, label, value, last, trailingIcon, onPress, hint}) {
 }
 
 const APPEARANCE_OPTIONS = [
-  {mode: 'system', label: 'System', icon: 'brightness-auto'},
-  {mode: 'light', label: 'Light', icon: 'light-mode'},
-  {mode: 'dark', label: 'Dark', icon: 'dark-mode'},
+  {mode: 'system', label: 'settings.system', icon: 'brightness-auto'},
+  {mode: 'light', label: 'settings.light', icon: 'light-mode'},
+  {mode: 'dark', label: 'settings.dark', icon: 'dark-mode'},
 ];
 
 function AppearancePicker() {
+  const {t} = useTranslation();
   const {ui, mode, setMode} = useAppTheme();
   const styles = useStyles(makeStyles);
 
@@ -68,7 +72,9 @@ function AppearancePicker() {
             style={[styles.segment, active && styles.segmentActive]}
             accessibilityRole="radio"
             accessibilityState={{selected: active}}
-            accessibilityLabel={`${option.label} appearance`}>
+            accessibilityLabel={t('settings.appearanceLabel', {
+              mode: t(option.label),
+            })}>
             <Icon
               name={option.icon}
               type="material"
@@ -80,7 +86,41 @@ function AppearancePicker() {
                 styles.segmentText,
                 active && [styles.segmentTextActive, {color: ui.primary}],
               ]}>
-              {option.label}
+              {t(option.label)}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function LanguagePicker() {
+  const {t, i18n} = useTranslation();
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
+
+  return (
+    <View style={styles.segments} accessibilityRole="radiogroup">
+      {LANGUAGES.map(language => {
+        const active = i18n.language === language.code;
+        return (
+          <Pressable
+            key={language.code}
+            onPress={() => setLanguage(language.code)}
+            style={[styles.segment, active && styles.segmentActive]}
+            accessibilityRole="radio"
+            accessibilityState={{selected: active}}
+            accessibilityLabel={t('settings.languageLabel', {
+              language: language.name,
+            })}>
+            <Text
+              style={[
+                styles.segmentText,
+                styles.languageText,
+                active && [styles.segmentTextActive, {color: ui.primary}],
+              ]}>
+              {language.name}
             </Text>
           </Pressable>
         );
@@ -90,6 +130,7 @@ function AppearancePicker() {
 }
 
 function Settings() {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const {theme} = useTheme();
@@ -110,27 +151,25 @@ function Settings() {
             />
           </View>
           <View>
-            <Text style={styles.company}>Shyam Transport Company</Text>
-            <Text style={styles.muted}>
-              Transport Contractor & Commission Agent
-            </Text>
+            <Text style={styles.company}>{t('common.companyName')}</Text>
+            <Text style={styles.muted}>{t('common.companyTagline')}</Text>
           </View>
         </View>
       </View>
 
-      <Text style={styles.sectionLabel}>ACCOUNT</Text>
+      <Text style={styles.sectionLabel}>{t('settings.account')}</Text>
       <View style={styles.card}>
         <InfoRow
           icon="person-outline"
-          label="Name"
+          label={t('settings.name')}
           value={user?.name}
           trailingIcon="edit"
           onPress={() => navigation.navigate('edit_name')}
         />
         <InfoRow
           icon="phone"
-          label="Mobile"
-          hint="Ask the office to change it"
+          label={t('settings.mobile')}
+          hint={t('settings.mobileHint')}
           value={user?.phone}
           trailingIcon="lock-outline"
         />
@@ -139,37 +178,49 @@ function Settings() {
           style={styles.row}
           accessibilityRole="button">
           <Icon name="logout" type="material" size={20} color={ui.danger} />
-          <Text style={[styles.rowLabel, styles.signOut]}>Sign out</Text>
+          <Text style={[styles.rowLabel, styles.signOut]}>
+            {t('settings.signOut')}
+          </Text>
         </Pressable>
       </View>
 
-      <Text style={styles.sectionLabel}>APPEARANCE</Text>
+      <Text style={styles.sectionLabel}>{t('settings.language')}</Text>
+      <View style={[styles.card, styles.appearanceCard]}>
+        <LanguagePicker />
+      </View>
+
+      <Text style={styles.sectionLabel}>{t('settings.appearance')}</Text>
       <View style={[styles.card, styles.appearanceCard]}>
         <AppearancePicker />
         <Text style={styles.appearanceHint}>
-          System follows your phone’s light or dark setting.
+          {t('settings.appearanceHint')}
         </Text>
       </View>
 
-      <Text style={styles.sectionLabel}>ABOUT</Text>
+      <Text style={styles.sectionLabel}>{t('settings.about')}</Text>
       <View style={styles.card}>
-        <InfoRow icon="info-outline" label="App version" value={version} last />
+        <InfoRow
+          icon="info-outline"
+          label={t('settings.appVersion')}
+          value={version}
+          last
+        />
       </View>
 
       <AppDialog
         visible={confirmSignOut}
         tone="warning"
-        title="Sign out?"
-        message="You’ll need your mobile number and PIN to sign in again."
+        title={t('settings.signOutTitle')}
+        message={t('settings.signOutMessage')}
         onClose={() => setConfirmSignOut(false)}
         actions={[
           {
-            label: 'Cancel',
+            label: t('common.cancel'),
             variant: 'outline',
             onPress: () => setConfirmSignOut(false),
           },
           {
-            label: 'Sign out',
+            label: t('settings.signOut'),
             onPress: () => {
               setConfirmSignOut(false);
               signOut();
@@ -248,6 +299,9 @@ const makeStyles = ({ui, cardShadow}) =>
       fontWeight: '500',
       color: ui.muted,
       marginLeft: 6,
+    },
+    languageText: {
+      marginLeft: 0,
     },
     segmentTextActive: {
       fontWeight: '700',

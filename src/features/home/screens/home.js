@@ -4,6 +4,7 @@ import React, {useEffect} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {storage} from '../../../../index';
 import {useAppTheme, useStyles} from '../../../theme/theme';
+import {useTranslation} from 'react-i18next';
 
 function ActionCard({icon, title, subtitle, color, onPress}) {
   const {ui} = useAppTheme();
@@ -28,6 +29,7 @@ function ActionCard({icon, title, subtitle, color, onPress}) {
 }
 
 function Home() {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const navigation = useNavigation();
@@ -48,40 +50,40 @@ function Home() {
         <View style={[styles.logo, {backgroundColor: theme.colors.primary}]}>
           <Icon name="local-shipping" type="material" color="white" size={28} />
         </View>
-        <Text style={styles.company}>Shyam Transport</Text>
-        <Text style={styles.tagline}>Quotations and invoices on the go</Text>
+        <Text style={styles.company}>{t('common.appName')}</Text>
+        <Text style={styles.tagline}>{t('common.tagline')}</Text>
       </View>
 
-      <Text style={styles.sectionLabel}>CREATE</Text>
+      <Text style={styles.sectionLabel}>{t('home.create')}</Text>
       <ActionCard
         icon="request-quote"
-        title="Quotation"
-        subtitle="Estimate for a new move"
+        title={t('home.quotation')}
+        subtitle={t('home.quotationHint')}
         color={theme.colors.secondary}
         onPress={() => navigation.navigate('quote', {is_billing: false})}
       />
       <ActionCard
         icon="receipt-long"
-        title="Billing"
-        subtitle="Invoice for a completed move"
+        title={t('home.billing')}
+        subtitle={t('home.billingHint')}
         color={theme.colors.primary}
         onPress={() => navigation.navigate('quote', {is_billing: true})}
       />
 
-      <Text style={styles.sectionLabel}>RECORDS</Text>
+      <Text style={styles.sectionLabel}>{t('home.records')}</Text>
       <ActionCard
         icon="folder-open"
-        title="Documents"
-        subtitle="View and share past quotations and invoices"
+        title={t('home.documents')}
+        subtitle={t('home.documentsHint')}
         color={theme.colors.tertiary}
         onPress={() => navigation.navigate('documents')}
       />
 
-      <Text style={styles.sectionLabel}>MORE</Text>
+      <Text style={styles.sectionLabel}>{t('home.more')}</Text>
       <ActionCard
         icon="settings"
-        title="Settings"
-        subtitle="App preferences"
+        title={t('home.settings')}
+        subtitle={t('home.settingsHint')}
         color={ui.muted}
         onPress={() => navigation.navigate('settings')}
       />

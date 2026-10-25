@@ -14,8 +14,28 @@ import FormField from '../../../components/common/form-field';
 import {useAppTheme, useStyles} from '../../../theme/theme';
 import {useAuth} from '../auth-context';
 import {normalizePhone} from '../phone';
+import {useTranslation} from 'react-i18next';
+
+// Server replies are English; translate the ones the login screen can get.
+const loginErrorMessage = (err, t) => {
+  const response = err?.response;
+  if (!response) {
+    return t('common.serverUnreachable');
+  }
+  if (response.status === 429) {
+    const minutes = response.data?.message?.match(/\d+/)?.[0];
+    return minutes
+      ? t('auth.locked', {count: minutes})
+      : t('auth.tooManyRequests');
+  }
+  if (response.status === 400) {
+    return t('auth.wrongPin');
+  }
+  return t('auth.signInFailed');
+};
 
 function Login() {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const {theme} = useTheme();
@@ -33,11 +53,11 @@ function Login() {
     const normalized = normalizePhone(phone);
     const newErrors = {
       phone: !phone.trim()
-        ? 'Enter your mobile number'
+        ? t('auth.enterMobile')
         : !normalized
-        ? 'Enter a valid 10-digit mobile number'
+        ? t('auth.invalidMobile')
         : undefined,
-      pin: !/^\d{4,6}$/.test(pin) ? 'Enter your 4 to 6 digit PIN' : undefined,
+      pin: !/^\d{4,6}$/.test(pin) ? t('auth.enterPin') : undefined,
     };
     setErrors(newErrors);
     setFormError('');
@@ -50,11 +70,7 @@ function Login() {
       await signIn({phone: normalized, pin});
     } catch (err) {
       setPin('');
-      setFormError(
-        err?.response
-          ? err.response.data?.message ?? 'Could not sign in. Please try again.'
-          : 'Could not reach the server. Check your internet connection.',
-      );
+      setFormError(loginErrorMessage(err, t));
     } finally {
       setSubmitting(false);
     }
@@ -73,8 +89,8 @@ function Login() {
         <View style={[styles.logo, {backgroundColor: theme.colors.primary}]}>
           <Icon name="local-shipping" type="material" color="white" size={30} />
         </View>
-        <Text style={styles.title}>Shyam Transport</Text>
-        <Text style={styles.subtitle}>Sign in to continue</Text>
+        <Text style={styles.title}>{t('common.appName')}</Text>
+        <Text style={styles.subtitle}>{t('auth.signInToContinue')}</Text>
 
         <View style={styles.card}>
           {!!formError && (
@@ -90,8 +106,8 @@ function Login() {
           )}
 
           <FormField
-            label="Mobile number"
-            placeholder="10-digit mobile number"
+            label={t('auth.mobileNumber')}
+            placeholder={t('auth.mobilePlaceholder')}
             inputMode="tel"
             textContentType="telephoneNumber"
             autoComplete="tel"
@@ -107,8 +123,8 @@ function Login() {
           />
           <FormField
             ref={pinRef}
-            label="PIN"
-            placeholder="4 to 6 digits"
+            label={t('auth.pin')}
+            placeholder={t('auth.pinPlaceholder')}
             inputMode="numeric"
             secureTextEntry
             maxLength={6}
@@ -128,12 +144,12 @@ function Login() {
             hitSlop={8}
             accessibilityRole="button">
             <Text style={[styles.forgotText, {color: theme.colors.secondary}]}>
-              Forgot PIN?
+              {t('auth.forgotPin')}
             </Text>
           </Pressable>
 
           <Button
-            title="Sign in"
+            title={t('auth.signIn')}
             color="secondary"
             raised={false}
             loading={submitting}
@@ -145,9 +161,7 @@ function Login() {
           />
         </View>
 
-        <Text style={styles.help}>
-          Don’t have a PIN? Ask the office to add your mobile number.
-        </Text>
+        <Text style={styles.help}>{t('auth.noPin')}</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );

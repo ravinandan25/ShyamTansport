@@ -10,9 +10,11 @@ import AppDialog from '../../../components/common/app-dialog';
 import {useAppTheme, useStyles} from '../../../theme/theme';
 import {BASE_URL} from '../../../utils/constants';
 import {formatRupees} from '../../../utils/currency';
+import {useTranslation} from 'react-i18next';
 
 // Shows the PDF the server stored for a quotation or invoice.
 function DocumentViewer({route}) {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const {doc} = route.params;
@@ -59,7 +61,9 @@ function DocumentViewer({route}) {
           {formatRupees(doc.total)}
         </Text>
         {!!doc.created_by && (
-          <Text style={styles.meta}>Created by {doc.created_by}</Text>
+          <Text style={styles.meta}>
+            {t('pdf.createdBy', {name: doc.created_by})}
+          </Text>
         )}
       </View>
 
@@ -79,15 +83,15 @@ function DocumentViewer({route}) {
         {status === 'loading' && (
           <View style={styles.overlay}>
             <ActivityIndicator size="large" color={theme.colors.secondary} />
-            <Text style={styles.overlayText}>Loading PDF…</Text>
+            <Text style={styles.overlayText}>{t('pdf.loading')}</Text>
           </View>
         )}
         {status === 'error' && (
           <View style={styles.overlay}>
             <Icon name="cloud-off" type="material" size={40} color={ui.faint} />
-            <Text style={styles.overlayTitle}>Couldn’t load the PDF</Text>
+            <Text style={styles.overlayTitle}>{t('pdf.loadFailed')}</Text>
             <Text style={styles.overlayText}>
-              Check your internet connection and try again.
+              {t('common.checkConnection')}
             </Text>
           </View>
         )}
@@ -104,7 +108,7 @@ function DocumentViewer({route}) {
               style={styles.shareIcon}
             />
           }
-          title="Share"
+          title={t('common.share')}
           color="secondary"
           raised={false}
           loading={sharing}
@@ -118,8 +122,8 @@ function DocumentViewer({route}) {
       <AppDialog
         visible={shareError}
         tone="danger"
-        title="Couldn’t share the PDF"
-        message="Check your internet connection and try again."
+        title={t('pdf.shareFailed')}
+        message={t('common.checkConnection')}
         onClose={() => setShareError(false)}
       />
     </View>

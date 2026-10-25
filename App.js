@@ -5,6 +5,7 @@
  * @format
  */
 
+import './src/i18n';
 import React, {useCallback, useState} from 'react';
 import {StatusBar, StyleSheet, View} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';

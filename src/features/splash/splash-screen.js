@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import {palette} from '../../theme/palettes';
+import {useTranslation} from 'react-i18next';
 const TRUCK_SIZE = 96; // must match res/drawable/splash_truck.xml
 // Same in light and dark mode, to match the native splash (res/values/colors.xml).
 const SPLASH_BACKGROUND = palette.light.primary;
@@ -17,6 +18,7 @@ const BAR_WIDTH = 120;
 // Starts on exactly the frame the native splash shows (truck centred on the
 // brand colour), animates the name in, then fades out to reveal the app.
 function SplashScreen({onFinish}) {
+  const {t} = useTranslation();
   const {theme} = useTheme();
   const truckLift = useRef(new Animated.Value(0)).current;
   const truckDrive = useRef(new Animated.Value(0)).current;
@@ -111,7 +113,7 @@ function SplashScreen({onFinish}) {
         styles.container,
         {backgroundColor: SPLASH_BACKGROUND, opacity: fadeOut},
       ]}
-      accessibilityLabel="Shyam Transport is loading">
+      accessibilityLabel={t('common.loading')}>
       <View style={styles.anchor}>
         <Animated.View
           style={{
@@ -146,12 +148,10 @@ function SplashScreen({onFinish}) {
 
         <View style={styles.textBlock}>
           <Animated.Text style={[styles.title, textStyle]}>
-            Shyam Transport
+            {t('common.appName')}
           </Animated.Text>
           <Animated.View style={textStyle}>
-            <Text style={styles.tagline}>
-              Quotations and invoices on the go
-            </Text>
+            <Text style={styles.tagline}>{t('common.tagline')}</Text>
           </Animated.View>
           <View style={styles.track}>
             <Animated.View

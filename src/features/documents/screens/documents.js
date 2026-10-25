@@ -14,14 +14,16 @@ import {
 import {useAppTheme, useStyles} from '../../../theme/theme';
 import {formatRupees} from '../../../utils/currency';
 import {fetchDocumentsAPI} from '../store/api';
+import {useTranslation} from 'react-i18next';
 
 const TABS = [
-  {key: undefined, label: 'All'},
-  {key: 'quotation', label: 'Quotations'},
-  {key: 'invoice', label: 'Invoices'},
+  {key: undefined, label: 'documents.all'},
+  {key: 'quotation', label: 'documents.quotations'},
+  {key: 'invoice', label: 'documents.invoices'},
 ];
 
 function DocumentCard({doc, onPress}) {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const {theme} = useTheme();
@@ -34,9 +36,11 @@ function DocumentCard({doc, onPress}) {
       android_ripple={{color: ui.border}}
       style={styles.card}
       accessibilityRole="button"
-      accessibilityLabel={`${isInvoice ? 'Invoice' : 'Quotation'} ${
-        doc.number
-      } for ${doc.customer_name}`}>
+      accessibilityLabel={t('documents.cardLabel', {
+        type: isInvoice ? t('documents.invoice') : t('documents.quotation'),
+        number: doc.number,
+        customer: doc.customer_name,
+      })}>
       <View style={[styles.cardIcon, {backgroundColor: color + '26'}]}>
         <Icon
           name={isInvoice ? 'receipt-long' : 'request-quote'}
@@ -72,7 +76,9 @@ function DocumentCard({doc, onPress}) {
         <Text style={styles.total}>{formatRupees(doc.total)}</Text>
         <View style={[styles.badge, {backgroundColor: color + '1F'}]}>
           <Text style={[styles.badgeText, {color}]}>
-            {isInvoice ? 'Invoice' : 'Quote'}
+            {isInvoice
+              ? t('documents.invoiceBadge')
+              : t('documents.quoteBadge')}
           </Text>
         </View>
       </View>
@@ -81,6 +87,7 @@ function DocumentCard({doc, onPress}) {
 }
 
 function Documents() {
+  const {t} = useTranslation();
   const {ui, isDark} = useAppTheme();
   const styles = useStyles(makeStyles);
   const navigation = useNavigation();
@@ -183,12 +190,10 @@ function Documents() {
       return (
         <View style={styles.state}>
           <Icon name="cloud-off" type="material" size={40} color={ui.faint} />
-          <Text style={styles.stateTitle}>Couldn’t load documents</Text>
-          <Text style={styles.stateText}>
-            Check your internet connection and try again.
-          </Text>
+          <Text style={styles.stateTitle}>{t('documents.loadFailed')}</Text>
+          <Text style={styles.stateText}>{t('common.checkConnection')}</Text>
           <Button
-            title="Try again"
+            title={t('common.tryAgain')}
             raised={false}
             color="secondary"
             onPress={() => load()}
@@ -207,12 +212,12 @@ function Documents() {
           color={ui.faint}
         />
         <Text style={styles.stateTitle}>
-          {query ? 'No matches' : 'No documents yet'}
+          {query ? t('documents.noMatches') : t('documents.empty')}
         </Text>
         <Text style={styles.stateText}>
           {query
-            ? `Nothing found for “${query}”.`
-            : 'Quotations and invoices you create will appear here.'}
+            ? t('documents.nothingFound', {query})
+            : t('documents.emptyHint')}
         </Text>
       </View>
     );
@@ -225,7 +230,7 @@ function Documents() {
           <Icon name="search" type="material" size={22} color={ui.faint} />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search name, phone or number"
+            placeholder={t('documents.searchPlaceholder')}
             placeholderTextColor={ui.faint}
             keyboardAppearance={isDark ? 'dark' : 'light'}
             value={search}
@@ -238,7 +243,7 @@ function Documents() {
               onPress={() => setSearch('')}
               hitSlop={10}
               accessibilityRole="button"
-              accessibilityLabel="Clear search">
+              accessibilityLabel={t('documents.clearSearch')}>
               <Icon name="close" type="material" size={20} color={ui.muted} />
             </Pressable>
           )}
@@ -260,7 +265,7 @@ function Documents() {
                     active && styles.tabTextActive,
                     active && {color: theme.colors.primary},
                   ]}>
-                  {tab.label}
+                  {t(tab.label)}
                 </Text>
               </Pressable>
             );
@@ -291,10 +296,12 @@ function Documents() {
               style={styles.footerRetry}
               accessibilityRole="button">
               <Text style={styles.footerRetryText}>
-                Couldn’t load more. Tap to retry.
+                {t('documents.loadMoreFailed')}
               </Text>
             </Pressable>
-          ) : <View style={{height: 20}} />
+          ) : (
+            <View style={{height: 20}} />
+          )
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.4}

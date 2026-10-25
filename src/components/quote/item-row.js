@@ -3,8 +3,10 @@ import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
 import {useAppTheme, useStyles} from '../../theme/theme';
 import {formatRupees} from '../../utils/currency';
+import {useTranslation} from 'react-i18next';
 
 function ItemRow({index, row, onPress}) {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   return (
@@ -13,7 +15,7 @@ function ItemRow({index, row, onPress}) {
       android_ripple={{color: ui.border}}
       style={styles.row}
       accessibilityRole="button"
-      accessibilityLabel={`Edit ${row.item}`}>
+      accessibilityLabel={t('quote.editItem', {name: row.item})}>
       <View style={styles.index}>
         <Text style={styles.indexText}>{index + 1}</Text>
       </View>

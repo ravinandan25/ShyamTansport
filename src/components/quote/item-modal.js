@@ -5,11 +5,13 @@ import Modal from '../common/app-modal';
 import FormField from '../common/form-field';
 import {useAppTheme, useStyles} from '../../theme/theme';
 import {formatRupees} from '../../utils/currency';
+import {useTranslation} from 'react-i18next';
 
 const NO_ERRORS = {item: '', qty: '', rate: ''};
 
 // Add a new item (item = null) or edit / delete an existing one.
 function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
+  const {t} = useTranslation();
   const {ui} = useAppTheme();
   const styles = useStyles(makeStyles);
   const {theme} = useTheme();
@@ -32,14 +34,14 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
     const qtyNum = Number(qty);
     const rateNum = Number(rate);
     const newErrors = {
-      item: description.trim() === '' ? 'Description is required' : '',
+      item: description.trim() === '' ? t('item.errors.description') : '',
       qty:
         qty === '' || isNaN(qtyNum) || qtyNum <= 0
-          ? 'Quantity must be a positive number'
+          ? t('item.errors.quantity')
           : '',
       rate:
         rate === '' || isNaN(rateNum) || rateNum < 0
-          ? 'Rate must be a non-negative number'
+          ? t('item.errors.rate')
           : '',
     };
     setErrors(newErrors);
@@ -60,7 +62,9 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
       <View style={styles.sheet}>
         <ScrollView keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
-            <Text style={styles.title}>{item ? 'Edit item' : 'Add item'}</Text>
+            <Text style={styles.title}>
+              {item ? t('item.editTitle') : t('item.addTitle')}
+            </Text>
             {item && (
               <Pressable
                 onPress={() => {
@@ -69,21 +73,21 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
                 }}
                 style={styles.delete}
                 accessibilityRole="button"
-                accessibilityLabel="Delete item">
+                accessibilityLabel={t('item.deleteItem')}>
                 <Icon
                   name="delete-outline"
                   type="material"
                   size={20}
                   color={ui.danger}
                 />
-                <Text style={styles.deleteText}>Delete</Text>
+                <Text style={styles.deleteText}>{t('item.delete')}</Text>
               </Pressable>
             )}
           </View>
 
           <FormField
-            label="Description"
-            placeholder="e.g. Household goods"
+            label={t('item.description')}
+            placeholder={t('item.descriptionPlaceholder')}
             value={description}
             onChangeText={setDescription}
             error={errors.item}
@@ -91,7 +95,7 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
           />
           <View style={styles.row}>
             <FormField
-              label="Quantity"
+              label={t('item.quantity')}
               placeholder="0"
               value={qty}
               onChangeText={setQty}
@@ -100,7 +104,7 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
               style={styles.half}
             />
             <FormField
-              label="Rate (₹)"
+              label={t('item.rate')}
               placeholder="0"
               value={rate}
               onChangeText={setRate}
@@ -112,14 +116,14 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
 
           {amount > 0 && (
             <Text style={styles.amount}>
-              Amount:{' '}
+              {t('item.amount')}{' '}
               <Text style={styles.amountValue}>{formatRupees(amount)}</Text>
             </Text>
           )}
 
           <View style={styles.actions}>
             <Button
-              title="Cancel"
+              title={t('common.cancel')}
               type="outline"
               raised={false}
               onPress={onClose}
@@ -128,7 +132,7 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
               titleStyle={{color: theme.colors.primary}}
             />
             <Button
-              title={item ? 'Save' : 'Add'}
+              title={item ? t('common.save') : t('item.add')}
               raised={false}
               onPress={handleSave}
               color={theme.colors.secondary}
