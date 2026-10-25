@@ -2,8 +2,6 @@ import React, {useState} from 'react';
 import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View} from 'react-native';
-import FontAwesome, {SolidIcons} from 'react-native-fontawesome';
-import moment from 'moment';
 
 function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
   const [item, setItem] = useState('');
@@ -108,7 +106,6 @@ function CustomAddModal({setTableData, isOpen, setIsOpen, tableData}) {
             inputContainerStyle={{
               borderBottomWidth: 0,
               marginBottom: 0,
-              backgroundColor: 'blue',
               padding: 0,
               backgroundColor: 'rgba(255,214,194,.5)',
               borderRadius: 8,

@@ -4,7 +4,6 @@ import React from 'react';
 import home from '../../features/home/screens/home';
 import Quote from '../../features/quote/quote';
 import Settings from '../../features/settings/screens/settengs';
-import { Header } from '@rneui/base';
 import GeneratedPdf from '../../features/generated-pdf/screens/generated-pdf';
 
 function NavigationStack() {

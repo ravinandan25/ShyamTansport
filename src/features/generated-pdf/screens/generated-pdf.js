@@ -1,17 +1,7 @@
-import {Button, Text} from '@rneui/themed';
-import {
-  View,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Dimensions,
-  Linking,
-} from 'react-native';
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
-import background_image from '../../../assets/images/img1.jpg';
+import {Button} from '@rneui/themed';
+import {View, StyleSheet, Dimensions} from 'react-native';
+import {generatePDF} from 'react-native-html-to-pdf';
 
-import RenderHtml from 'react-native-render-html';
-import HTMLView from 'react-native-htmlview';
 import {useEffect, useState} from 'react';
 import Pdf from 'react-native-pdf';
 
@@ -20,7 +10,7 @@ import {storage} from '../../../..';
 
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
-import {Icon} from 'react-native-elements';
+import {Icon} from '@rneui/themed';
 
 function GeneratedPdf({route}) {
   const {
@@ -195,7 +185,7 @@ function GeneratedPdf({route}) {
   };
 
   const createPDF = async () => {
-    let file = await RNHTMLtoPDF.convert(options);
+    let file = await generatePDF(options);
 
     console.log(file);
     setUrl(file.filePath);
@@ -224,6 +214,8 @@ function GeneratedPdf({route}) {
   useEffect(() => {
     storage.setInt('invoice_number', storage.getInt('invoice_number') + 1);
     createPDF();
+    // Run once on mount: bumps the invoice number and generates the PDF a single time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

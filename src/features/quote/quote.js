@@ -3,20 +3,17 @@ import {Input} from '@rneui/base';
 import {Button, Text, useTheme} from '@rneui/themed';
 import React, {useEffect, useState} from 'react';
 import {
+  Platform,
   ScrollView,
   StyleSheet,
   View,
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
-import {PlusCircleOutlined} from 'react-native-vector-icons/AntDesign';
 import TableRow from '../../components/quote/table-row';
-import CustomModal from '../../components/quote/custom-modal';
 import CustomAddModal from '../../components/quote/custom-add-modaj';
-import DateTimePicker from 'react-native-ui-datepicker';
-import dayjs from 'dayjs';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { Icon } from 'react-native-elements'
+import {Icon} from '@rneui/themed';
 import moment from 'moment';
 
 function Quote() {
@@ -34,8 +31,6 @@ function Quote() {
   const [loadingDate, setLoadingDate] = useState(
     moment().format('DD MMM, YYYY'),
   );
-  data = [];
-
   const showDatePicker = () => {
     setDatePickerVisibility(true);
   };
@@ -50,30 +45,6 @@ function Quote() {
   };
 
   useEffect(() => {
-    setTableData(data);
-  }, []);
-
-  const render_table_data = async () => {
-    let data = tableData.map(item => {
-      return `<tr>
-          <td>${item.id}</td>
-          <td>${item.item}</td>
-          <td class="text-center align-middle" >${item.qty}</td>
-          <td>${item.rate}</td>
-          <td>${item.qty * item.rate}</td>
-        </tr>`;
-    });
-
-    tableRowsHTML = data.join('');
-    setTableString(tableRowsHTML);
-    
-  };
-
-  useEffect(() => {
-    render_table_data();
-  }, []);
-
-  useEffect(() => {
     let temp_total = 0;
     tableData.map(item => {
       temp_total += item.qty * item.rate;
@@ -83,7 +54,19 @@ function Quote() {
     }
 
     setTotal(temp_total);
-    render_table_data();
+
+    const tableRowsHTML = tableData
+      .map(item => {
+        return `<tr>
+          <td>${item.id}</td>
+          <td>${item.item}</td>
+          <td class="text-center align-middle" >${item.qty}</td>
+          <td>${item.rate}</td>
+          <td>${item.qty * item.rate}</td>
+        </tr>`;
+      })
+      .join('');
+    setTableString(tableRowsHTML);
   }, [tableData, tax]);
 
   return (
@@ -133,7 +116,6 @@ function Quote() {
               inputContainerStyle={{
                 borderBottomWidth: 0,
                 marginBottom: 0,
-                backgroundColor: 'blue',
                 padding: 0,
                 backgroundColor: 'rgba(255,214,194,.5)',
                 borderRadius: 8,
@@ -158,7 +140,6 @@ function Quote() {
               inputContainerStyle={{
                 borderBottomWidth: 0,
                 marginBottom: 0,
-                backgroundColor: 'blue',
                 padding: 0,
                 backgroundColor: 'rgba(255,214,194,.5)',
                 borderRadius: 8,

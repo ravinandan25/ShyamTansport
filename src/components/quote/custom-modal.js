@@ -3,7 +3,7 @@ import Modal from 'react-native-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View, TouchableOpacity} from 'react-native';
 
-import {Icon} from 'react-native-elements';
+import {Icon} from '@rneui/themed';
 
 function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
   const [item, setItem] = useState(row.item);
@@ -69,7 +69,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
 
   useEffect(() => {
     console.log('ROW=======', row);
-  }, []);
+  }, [row]);
 
   return (
     <Modal
@@ -126,7 +126,6 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
             inputContainerStyle={{
               borderBottomWidth: 0,
               marginBottom: 0,
-              backgroundColor: 'blue',
               padding: 0,
               backgroundColor: 'rgba(255,214,194,.5)',
               borderRadius: 8,

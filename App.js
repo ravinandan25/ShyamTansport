@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import {SafeAreaView, useColorScheme, View} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import NavigationStack from './src/components/navigation/navigation-stack';
 import {createTheme, ThemeProvider} from '@rneui/themed';
 

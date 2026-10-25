@@ -54,6 +54,7 @@ yarn-error.log
 
 # Bundle artifact
 *.jsbundle
+android/app/src/main/assets/index.android.bundle
 
 # Ruby / CocoaPods
 /ios/Pods/
@@ -64,3 +65,6 @@ yarn-error.log
 
 # testing
 /coverage
+
+# Yarn
+.yarn/install-state.gz

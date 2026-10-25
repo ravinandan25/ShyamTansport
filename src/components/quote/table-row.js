@@ -1,7 +1,6 @@
-import {Button, Input, Text, useTheme} from '@rneui/themed';
+import {Text, useTheme} from '@rneui/themed';
 import React, {useState} from 'react';
-import {ScrollView, TouchableOpacity, View} from 'react-native';
-import Modal from 'react-native-modal';
+import {TouchableOpacity, View} from 'react-native';
 import CustomModal from './custom-modal';
 
 function TableRow({row, setTableData,tableData}) {
