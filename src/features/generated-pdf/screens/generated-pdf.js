@@ -1,5 +1,6 @@
-import {Button} from '@rneui/themed';
-import {View, StyleSheet, Dimensions} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {Button, Text, useTheme} from '@rneui/themed';
+import {ActivityIndicator, View, StyleSheet} from 'react-native';
 import {generatePDF} from 'react-native-html-to-pdf';
 
 import {useEffect, useState} from 'react';
@@ -16,6 +17,9 @@ import pdfBackground from '../../../assets/images/pdf-background';
 import signatureStamp from '../../../assets/images/signature-stamp';
 import openSansFont from '../../../assets/fonts/open-sans';
 import rupeeFont from '../../../assets/fonts/rupee';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import AppDialog from '../../../components/common/app-dialog';
+import {cardShadow, ui} from '../../../theme/ui';
 
 function GeneratedPdf({route}) {
   const {
@@ -30,9 +34,12 @@ function GeneratedPdf({route}) {
     is_billing,
     number,
   } = route.params;
-
+  const navigation = useNavigation();
+  const {theme} = useTheme();
+  const insets = useSafeAreaInsets();
 
   const [url, setUrl] = useState('');
+  const [shareError, setShareError] = useState(false);
 
   const totalInWords = amountInWords(total);
   const tableString = table
@@ -266,45 +273,24 @@ function GeneratedPdf({route}) {
   };
   const handleShare = async () => {
     try {
-      const shareOptions = {
-        url: `file://${url}`,
-        type: 'application/pdf',
-        filename: is_billing ? `${number}.pdf` : `${number}.pdf`,
-        failOnCancel: false, // ✅ VERY IMPORTANT
-      };
-
-      const result = await Share.open(shareOptions);
-
-      if (result?.app) {
-        console.log(`Shared via ${result.app}`);
-      } else {
-        console.log('Shared successfully');
+      // react-native-share can only hand out files from the cache (or public
+      // Download) folder, so share a copy instead of the app-private original.
+      const sharePath = `${RNFS.CachesDirectoryPath}/${number}.pdf`;
+      if (await RNFS.exists(sharePath)) {
+        await RNFS.unlink(sharePath);
       }
+      await RNFS.copyFile(url, sharePath);
+      await Share.open({
+        url: `file://${sharePath}`,
+        type: 'application/pdf',
+        filename: `${number}.pdf`,
+        failOnCancel: false,
+      });
     } catch (error) {
-      // This will now rarely trigger
-      console.error('Error sharing:', error);
+      console.log('Error sharing:', error);
+      setShareError(true);
     }
   };
-  // const handelShare = async () => {
-  //   try {
-  //     const pdfBase64 = await RNFS.readFile(url, 'base64');
-
-  //     const shareOptions = {
-  //       url: `data:application/pdf;base64,${pdfBase64}`,
-  //       filename: is_billing ? 'Bill' : 'Quotation',
-  //     };
-
-  //     const result = await Share.open(shareOptions);
-
-  //     if (result.app) {
-  //       console.log(`Shared via ${result.app}`);
-  //     } else {
-  //       console.log('Shared successfully');
-  //     }
-  //   } catch (error) {
-  //     console.error('Error sharing:', error);
-  //   }
-  // };
 
   useEffect(() => {
     storage.setInt('invoice_number', storage.getInt('invoice_number') + 1);
@@ -315,37 +301,48 @@ function GeneratedPdf({route}) {
 
   return (
     <View style={styles.container}>
-      {url !== '' && (
+      {url === '' ? (
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" color={theme.colors.secondary} />
+          <Text style={styles.loadingText}>Preparing PDF…</Text>
+        </View>
+      ) : (
         <Pdf
-          source={{
-            uri: url,
-          }}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`Number of pages: ${numberOfPages}`);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-            console.log(`Current page: ${page}`);
-          }}
+          source={{uri: url}}
           onError={error => {
             console.log(error);
-          }}
-          onPressLink={uri => {
-            console.log(`Link pressed: ${uri}`);
           }}
           style={styles.pdf}
         />
       )}
-      <View style={styles.button_container}>
+      <View style={[styles.footer, {paddingBottom: 18 + insets.bottom}]}>
         <Button
-          icon={
-            <Icon style={{marginLeft: 5}} name="share" size={25} color="#fff" />
-          }
-          iconRight
+          title="Done"
+          type="outline"
+          raised={false}
+          onPress={() => navigation.popToTop()}
+          containerStyle={styles.footerButton}
+          buttonStyle={[styles.button, {borderColor: theme.colors.primary}]}
+          titleStyle={{color: theme.colors.primary}}
+        />
+        <Button
+          icon={<Icon name="share" type="material" size={20} color="#fff" style={styles.shareIcon} />}
           title="Share"
           color="secondary"
-          containerStyle={styles.btn}
-          onPress={handleShare}></Button>
+          raised={false}
+          disabled={url === ''}
+          onPress={handleShare}
+          containerStyle={[styles.footerButton, styles.shareButton]}
+          buttonStyle={styles.button}
+        />
       </View>
+      <AppDialog
+        visible={shareError}
+        tone="danger"
+        title="Couldn’t share the PDF"
+        message="Please try again."
+        onClose={() => setShareError(false)}
+      />
     </View>
   );
 }
@@ -354,24 +351,46 @@ export default GeneratedPdf;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'flex-start',
+    flex: 1,
+    backgroundColor: ui.screen,
+  },
+  loading: {
+    flex: 1,
     alignItems: 'center',
-    position: 'relative',
-
-    height: Dimensions.get('window').height - 50,
+    justifyContent: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 15,
+    color: ui.muted,
   },
   pdf: {
-    backgroundColor: 'white',
     flex: 1,
-    width: Dimensions.get('window').width,
-    paddingTop: 30,
+    backgroundColor: ui.screen,
   },
-  button_container: {
-    width: '100%',
+  footer: {
+    flexDirection: 'row',
+    gap: 12,
+    backgroundColor: ui.card,
     paddingHorizontal: 20,
-    backgroundColor: 'white',
-    paddingVertical: 20,
-    position: 'absolute',
-    bottom: 0,
+    paddingTop: 14,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    ...cardShadow,
+    elevation: 12,
+  },
+  footerButton: {
+    flex: 1,
+    width: 'auto',
+  },
+  shareButton: {
+    flex: 2,
+  },
+  button: {
+    borderRadius: 14,
+    paddingVertical: 14,
+  },
+  shareIcon: {
+    marginRight: 8,
   },
 });

@@ -30,5 +30,15 @@ target 'ShyamTransport' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # react-native-config: which .env file each build configuration reads.
+    env_files = {'Debug' => '.env.development', 'Release' => '.env.production'}
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'react-native-config'
+
+      target.build_configurations.each do |build_config|
+        build_config.build_settings['ENVFILE'] = env_files[build_config.name]
+      end
+    end
   end
 end

@@ -3201,6 +3201,7 @@ __metadata:
     react: "npm:19.3.0"
     react-native: "npm:0.88.0"
     react-native-blob-util: "npm:^0.25.1"
+    react-native-config: "npm:1.7.2"
     react-native-fs: "npm:^2.20.0"
     react-native-html-to-pdf: "npm:^1.3.0"
     react-native-mmkv-storage: "npm:^13.0.1"
@@ -8462,6 +8463,20 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/5e7591a55ee095297960d7b00359b17c587e1568884a5f598ee7d52e6939ca389925a4db0b1c60f5ae5f42848c0f5d16ccac1994623c5c41eb446c56a87f218d
+  languageName: node
+  linkType: hard
+
+"react-native-config@npm:1.7.2":
+  version: 1.7.2
+  resolution: "react-native-config@npm:1.7.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-windows: ">=0.61"
+  peerDependenciesMeta:
+    react-native-windows:
+      optional: true
+  checksum: 10c0/2c414826632e465e080b426b64e20dd540dd639597cb81ff58d840e715b3cee25998c3a392bd37023f0353e036de343f26c31255cc3f17f7733d7d1821de6d13
   languageName: node
   linkType: hard
 

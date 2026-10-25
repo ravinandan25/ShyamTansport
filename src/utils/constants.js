@@ -1,5 +1,10 @@
-// import Config from 'react-native-config';
-console.log('====================================');
-// console.log(Config.APP_BASE_URL);
-console.log('====================================');
-export const BASE_URL = 'https://shyamtransport.com/';
+import Config from 'react-native-config';
+
+// Set per build in .env.development / .env.production (see .env.example).
+export const BASE_URL = (Config.APP_BASE_URL ?? '').replace(/\/?$/, '/');
+
+if (__DEV__ && !Config.APP_BASE_URL) {
+  console.warn(
+    'APP_BASE_URL is missing from the .env file used for this build.',
+  );
+}

@@ -68,3 +68,8 @@ android/app/src/main/assets/index.android.bundle
 
 # Yarn
 .yarn/install-state.gz
+
+# Environment files (copy .env.example)
+.env
+.env.*
+!.env.example

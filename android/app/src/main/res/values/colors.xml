@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Keep in sync with theme.colors.primary in App.js and src/features/splash. -->
+    <color name="splash_background">#6D6875</color>
+</resources>

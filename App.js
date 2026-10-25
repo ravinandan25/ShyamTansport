@@ -5,12 +5,19 @@
  * @format
  */
 
-import React from 'react';
-import {SafeAreaView} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {StatusBar, StyleSheet, View} from 'react-native';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 import NavigationStack from './src/components/navigation/navigation-stack';
+import SplashScreen from './src/features/splash/splash-screen';
+import {AuthProvider} from './src/features/auth/auth-context';
 import {createTheme, ThemeProvider} from '@rneui/themed';
+import {ui} from './src/theme/ui';
 
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const hideSplash = useCallback(() => setShowSplash(false), []);
+
   const theme = createTheme({
     lightColors: {
       primary: '#6D6875',
@@ -42,12 +49,30 @@ function App() {
   });
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaProvider>
       <ThemeProvider theme={theme}>
-        <NavigationStack></NavigationStack>
+        <StatusBar
+          barStyle={showSplash ? 'light-content' : 'dark-content'}
+          translucent
+          backgroundColor="transparent"
+        />
+        {/* Covers the native splash colour that stays as the window background. */}
+        <View style={styles.root}>
+          <AuthProvider>
+            <NavigationStack />
+          </AuthProvider>
+          {showSplash && <SplashScreen onFinish={hideSplash} />}
+        </View>
       </ThemeProvider>
-    </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
 export default App;
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: ui.screen,
+  },
+});
