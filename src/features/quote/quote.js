@@ -18,6 +18,8 @@ import dayjs from 'dayjs';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import {Icon} from 'react-native-elements';
 import moment from 'moment';
+import {createInvoiceAPI, createQuotationAPI} from './store/api';
+
 
 function Quote() {
   const route = useRoute();
@@ -53,6 +55,8 @@ function Quote() {
 
   useEffect(() => {
     setTableData(data);
+
+    
   }, []);
 
   const render_table_data = async () => {
@@ -86,6 +90,50 @@ function Quote() {
     setTotal(temp_total);
     render_table_data();
   }, [tableData, tax]);
+
+  const generatePayload = async () => {
+    try {
+      let payload = {
+        customer_name: customerName,
+        customer_address: address,
+        customer_phone: phone,
+
+        loading_date: moment(loadingDate, 'DD MMM, YYYY').format('YYYY-MM-DD'),
+
+        tax: parseFloat(tax || 0),
+
+        items: tableData.map(item => ({
+          description: item.item,
+          quantity: item.qty,
+          rate: item.rate,
+        })),
+      };
+
+      console.log('PAYLOAD:', payload);
+
+      const res = is_billing
+        ? await createInvoiceAPI(payload)
+        : await createQuotationAPI(payload);
+
+      console.log('SUCCESS:', res);
+
+      navigation.navigate('generated_pdf', {
+        table: tableData,
+        total: total,
+        loadingDate: loadingDate,
+        customerName: customerName,
+        phone: phone,
+        address: address,
+        tax: tax,
+        tableString: tableString,
+        is_billing: is_billing,
+        number: is_billing ? res.invoice_number : res?.quotation_number,
+      });
+    } catch (err) {
+      console.log(err);
+      alert('Failed to create quotation');
+    }
+  };
 
   return (
     <View
@@ -331,17 +379,7 @@ function Quote() {
           containerStyle={styles.btn}
           onPress={() => {
             // console.log(tableData);
-            navigation.navigate('generated_pdf', {
-              table: tableData,
-              total: total,
-              loadingDate: loadingDate,
-              customerName: customerName,
-              phone: phone,
-              address: address,
-              tax: tax,
-              tableString: tableString,
-              is_billing: is_billing,
-            });
+            generatePayload();
           }}
         />
       </View>
