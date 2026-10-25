@@ -7,12 +7,14 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import AppDialog from '../../../components/common/app-dialog';
-import {cardShadow, ui} from '../../../theme/ui';
+import {useAppTheme, useStyles} from '../../../theme/theme';
 import {BASE_URL} from '../../../utils/constants';
 import {formatRupees} from '../../../utils/currency';
 
 // Shows the PDF the server stored for a quotation or invoice.
 function DocumentViewer({route}) {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const {doc} = route.params;
   const {theme} = useTheme();
   const insets = useSafeAreaInsets();
@@ -126,68 +128,69 @@ function DocumentViewer({route}) {
 
 export default DocumentViewer;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  summary: {
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-  },
-  customer: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  meta: {
-    fontSize: 14,
-    color: ui.muted,
-    marginTop: 2,
-  },
-  pdfArea: {
-    flex: 1,
-  },
-  pdf: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: ui.screen,
-    paddingHorizontal: 32,
-  },
-  overlayTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: ui.text,
-    marginTop: 12,
-  },
-  overlayText: {
-    fontSize: 14,
-    color: ui.muted,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  footer: {
-    backgroundColor: ui.card,
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    ...cardShadow,
-    elevation: 12,
-  },
-  shareButton: {
-    width: 'auto',
-  },
-  button: {
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  shareIcon: {
-    marginRight: 8,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    summary: {
+      paddingHorizontal: 20,
+      paddingBottom: 12,
+    },
+    customer: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    meta: {
+      fontSize: 14,
+      color: ui.muted,
+      marginTop: 2,
+    },
+    pdfArea: {
+      flex: 1,
+    },
+    pdf: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: ui.screen,
+      paddingHorizontal: 32,
+    },
+    overlayTitle: {
+      fontSize: 17,
+      fontWeight: '700',
+      color: ui.text,
+      marginTop: 12,
+    },
+    overlayText: {
+      fontSize: 14,
+      color: ui.muted,
+      textAlign: 'center',
+      marginTop: 8,
+    },
+    footer: {
+      backgroundColor: ui.card,
+      paddingHorizontal: 20,
+      paddingTop: 14,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      ...cardShadow,
+      elevation: 12,
+    },
+    shareButton: {
+      width: 'auto',
+    },
+    button: {
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    shareIcon: {
+      marginRight: 8,
+    },
+  });

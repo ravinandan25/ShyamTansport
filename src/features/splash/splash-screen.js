@@ -8,7 +8,10 @@ import {
   View,
 } from 'react-native';
 
+import {palette} from '../../theme/palettes';
 const TRUCK_SIZE = 96; // must match res/drawable/splash_truck.xml
+// Same in light and dark mode, to match the native splash (res/values/colors.xml).
+const SPLASH_BACKGROUND = palette.light.primary;
 const BAR_WIDTH = 120;
 
 // Starts on exactly the frame the native splash shows (truck centred on the
@@ -106,7 +109,7 @@ function SplashScreen({onFinish}) {
       style={[
         StyleSheet.absoluteFill,
         styles.container,
-        {backgroundColor: theme.colors.primary, opacity: fadeOut},
+        {backgroundColor: SPLASH_BACKGROUND, opacity: fadeOut},
       ]}
       accessibilityLabel="Shyam Transport is loading">
       <View style={styles.anchor}>

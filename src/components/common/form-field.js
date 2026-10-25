@@ -1,7 +1,7 @@
 import {Icon, Text, useTheme} from '@rneui/themed';
 import React, {useState} from 'react';
 import {Pressable, StyleSheet, TextInput, View} from 'react-native';
-import {ui} from '../../theme/ui';
+import {useAppTheme, useStyles} from '../../theme/theme';
 
 // Labelled text input. Pass onPress instead of onChangeText to make it a
 // read-only field that opens a picker (e.g. a date).
@@ -15,6 +15,8 @@ function FormField({
   ref,
   ...inputProps
 }) {
+  const {ui, isDark} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const {theme} = useTheme();
   const [focused, setFocused] = useState(false);
 
@@ -31,6 +33,7 @@ function FormField({
         ref={ref}
         style={[styles.input, multiline && styles.inputMultiline]}
         placeholderTextColor={ui.faint}
+        keyboardAppearance={isDark ? 'dark' : 'light'}
         multiline={multiline}
         editable={!onPress}
         pointerEvents={onPress ? 'none' : 'auto'}
@@ -67,42 +70,43 @@ function FormField({
 
 export default FormField;
 
-const styles = StyleSheet.create({
-  field: {
-    marginBottom: 14,
-  },
-  label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: ui.muted,
-    marginBottom: 6,
-  },
-  box: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ui.input,
-    borderWidth: 1.5,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    minHeight: 48,
-  },
-  boxMultiline: {
-    alignItems: 'flex-start',
-    paddingVertical: 4,
-  },
-  input: {
-    flex: 1,
-    fontSize: 15,
-    color: ui.text,
-    paddingVertical: 10,
-  },
-  inputMultiline: {
-    minHeight: 64,
-    textAlignVertical: 'top',
-  },
-  error: {
-    fontSize: 12,
-    color: ui.danger,
-    marginTop: 4,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    field: {
+      marginBottom: 14,
+    },
+    label: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: ui.muted,
+      marginBottom: 6,
+    },
+    box: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.input,
+      borderWidth: 1.5,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      minHeight: 48,
+    },
+    boxMultiline: {
+      alignItems: 'flex-start',
+      paddingVertical: 4,
+    },
+    input: {
+      flex: 1,
+      fontSize: 15,
+      color: ui.text,
+      paddingVertical: 10,
+    },
+    inputMultiline: {
+      minHeight: 64,
+      textAlignVertical: 'top',
+    },
+    error: {
+      fontSize: 12,
+      color: ui.danger,
+      marginTop: 4,
+    },
+  });

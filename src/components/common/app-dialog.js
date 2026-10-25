@@ -2,20 +2,27 @@ import {Button, Icon, Text, useTheme} from '@rneui/themed';
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
 import Modal from './app-modal';
-import {ui} from '../../theme/ui';
+import {useAppTheme, useStyles} from '../../theme/theme';
 
-const TONES = {
-  danger: {icon: 'error-outline', color: ui.danger},
-  warning: {icon: 'warning-amber', color: '#C77D2E'},
-  info: {icon: 'info-outline', color: null}, // falls back to theme primary
+const TONE_ICONS = {
+  danger: 'error-outline',
+  warning: 'warning-amber',
+  info: 'info-outline',
 };
 
 // Styled replacement for Alert.alert.
 // actions: [{label, onPress, variant: 'primary' | 'outline'}]
 function AppDialog({visible, tone = 'info', title, message, actions, onClose}) {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const {theme} = useTheme();
-  const {icon, color} = TONES[tone];
-  const accent = color ?? theme.colors.primary;
+  const icon = TONE_ICONS[tone];
+  const accent =
+    tone === 'danger'
+      ? ui.danger
+      : tone === 'warning'
+      ? ui.tertiary
+      : theme.colors.primary;
   const buttons = actions ?? [{label: 'OK', onPress: onClose}];
 
   return (
@@ -58,54 +65,55 @@ function AppDialog({visible, tone = 'info', title, message, actions, onClose}) {
 
 export default AppDialog;
 
-const styles = StyleSheet.create({
-  dialog: {
-    backgroundColor: ui.card,
-    borderRadius: 24,
-    paddingHorizontal: 24,
-    paddingTop: 28,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 19,
-    fontWeight: '700',
-    color: ui.text,
-    textAlign: 'center',
-  },
-  message: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: ui.muted,
-    textAlign: 'center',
-    marginTop: 8,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    alignSelf: 'stretch',
-    marginTop: 24,
-  },
-  action: {
-    flex: 1,
-    width: 'auto',
-  },
-  button: {
-    borderRadius: 14,
-    paddingVertical: 13,
-  },
-  buttonTitle: {
-    fontWeight: '700',
-  },
-  outlineTitle: {
-    fontWeight: '600',
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    dialog: {
+      backgroundColor: ui.card,
+      borderRadius: 24,
+      paddingHorizontal: 24,
+      paddingTop: 28,
+      paddingBottom: 20,
+      alignItems: 'center',
+    },
+    iconCircle: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 16,
+    },
+    title: {
+      fontSize: 19,
+      fontWeight: '700',
+      color: ui.text,
+      textAlign: 'center',
+    },
+    message: {
+      fontSize: 15,
+      lineHeight: 22,
+      color: ui.muted,
+      textAlign: 'center',
+      marginTop: 8,
+    },
+    actions: {
+      flexDirection: 'row',
+      gap: 12,
+      alignSelf: 'stretch',
+      marginTop: 24,
+    },
+    action: {
+      flex: 1,
+      width: 'auto',
+    },
+    button: {
+      borderRadius: 14,
+      paddingVertical: 13,
+    },
+    buttonTitle: {
+      fontWeight: '700',
+    },
+    outlineTitle: {
+      fontWeight: '600',
+    },
+  });

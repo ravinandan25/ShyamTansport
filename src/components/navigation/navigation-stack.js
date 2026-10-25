@@ -1,6 +1,10 @@
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  NavigationContainer,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import React from 'react';
+import React, {useMemo} from 'react';
 import home from '../../features/home/screens/home';
 import Quote from '../../features/quote/quote';
 import Settings from '../../features/settings/screens/settengs';
@@ -11,23 +15,43 @@ import DocumentViewer from '../../features/documents/screens/document-viewer';
 import Login from '../../features/auth/screens/login';
 import ForgotPin from '../../features/auth/screens/forgot-pin';
 import {useAuth} from '../../features/auth/auth-context';
-import {ui} from '../../theme/ui';
+import {useAppTheme} from '../../theme/theme';
 
 const Stack = createNativeStackNavigator();
 
-const screenOptions = {
-  headerStyle: {backgroundColor: ui.screen},
-  headerShadowVisible: false,
-  headerTintColor: ui.text,
-  headerTitleStyle: {fontWeight: '700', fontSize: 20},
-  contentStyle: {backgroundColor: ui.screen},
-};
-
 function NavigationStack() {
   const {isSignedIn} = useAuth();
+  const {ui, isDark} = useAppTheme();
+
+  const screenOptions = useMemo(
+    () => ({
+      headerStyle: {backgroundColor: ui.screen},
+      headerShadowVisible: false,
+      headerTintColor: ui.text,
+      headerTitleStyle: {fontWeight: '700', fontSize: 20},
+      contentStyle: {backgroundColor: ui.screen},
+    }),
+    [ui],
+  );
+
+  // Background used during screen transitions.
+  const navigationTheme = useMemo(() => {
+    const base = isDark ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        background: ui.screen,
+        card: ui.screen,
+        text: ui.text,
+        border: ui.border,
+        primary: ui.secondary,
+      },
+    };
+  }, [isDark, ui]);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator screenOptions={screenOptions}>
         {isSignedIn ? (
           <>

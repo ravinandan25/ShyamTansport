@@ -9,12 +9,13 @@ import {
   View,
 } from 'react-native';
 import FormField from '../../../components/common/form-field';
-import {cardShadow, ui} from '../../../theme/ui';
+import {useStyles} from '../../../theme/theme';
 import {useAuth} from '../../auth/auth-context';
 
 const MAX_LENGTH = 100; // StaffMember.name max_length on the server
 
 function EditName() {
+  const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const {user, updateName} = useAuth();
   const [name, setName] = useState(user?.name ?? '');
@@ -94,36 +95,37 @@ function EditName() {
 
 export default EditName;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  content: {
-    padding: 16,
-  },
-  card: {
-    backgroundColor: ui.card,
-    borderRadius: 18,
-    padding: 16,
-    ...cardShadow,
-  },
-  hint: {
-    fontSize: 13,
-    lineHeight: 19,
-    color: ui.muted,
-    marginTop: -4,
-    marginBottom: 16,
-  },
-  save: {
-    width: 'auto',
-  },
-  saveButton: {
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  saveTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    content: {
+      padding: 16,
+    },
+    card: {
+      backgroundColor: ui.card,
+      borderRadius: 18,
+      padding: 16,
+      ...cardShadow,
+    },
+    hint: {
+      fontSize: 13,
+      lineHeight: 19,
+      color: ui.muted,
+      marginTop: -4,
+      marginBottom: 16,
+    },
+    save: {
+      width: 'auto',
+    },
+    saveButton: {
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    saveTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+    },
+  });

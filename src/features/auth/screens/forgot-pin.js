@@ -9,13 +9,15 @@ import {
   View,
 } from 'react-native';
 import FormField from '../../../components/common/form-field';
-import {cardShadow, ui} from '../../../theme/ui';
+import {useAppTheme, useStyles} from '../../../theme/theme';
 import {normalizePhone} from '../phone';
 import {forgotPinAPI} from '../store/api';
 
 // Without SMS the app can't verify who is asking, so this only sends a request:
 // the office sets a new PIN in Django admin and tells the staff member.
 function ForgotPin() {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const route = useRoute();
   const {theme} = useTheme();
@@ -149,83 +151,84 @@ function ForgotPin() {
 
 export default ForgotPin;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  content: {
-    padding: 20,
-    paddingTop: 8,
-  },
-  intro: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: ui.muted,
-    marginBottom: 20,
-  },
-  card: {
-    backgroundColor: ui.card,
-    borderRadius: 20,
-    padding: 20,
-    ...cardShadow,
-  },
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ui.danger + '14',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-  },
-  bannerText: {
-    flex: 1,
-    fontSize: 14,
-    color: ui.danger,
-    marginLeft: 8,
-  },
-  submit: {
-    width: 'auto',
-    marginTop: 4,
-  },
-  fullWidth: {
-    alignSelf: 'stretch',
-  },
-  submitButton: {
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  submitTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  sentScreen: {
-    justifyContent: 'center',
-    padding: 20,
-  },
-  sentCard: {
-    alignItems: 'center',
-    paddingVertical: 32,
-  },
-  iconCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  sentTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  sentText: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: ui.muted,
-    textAlign: 'center',
-    marginTop: 8,
-    marginBottom: 24,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    content: {
+      padding: 20,
+      paddingTop: 8,
+    },
+    intro: {
+      fontSize: 15,
+      lineHeight: 22,
+      color: ui.muted,
+      marginBottom: 20,
+    },
+    card: {
+      backgroundColor: ui.card,
+      borderRadius: 20,
+      padding: 20,
+      ...cardShadow,
+    },
+    banner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.danger + '14',
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 16,
+    },
+    bannerText: {
+      flex: 1,
+      fontSize: 14,
+      color: ui.danger,
+      marginLeft: 8,
+    },
+    submit: {
+      width: 'auto',
+      marginTop: 4,
+    },
+    fullWidth: {
+      alignSelf: 'stretch',
+    },
+    submitButton: {
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    submitTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    sentScreen: {
+      justifyContent: 'center',
+      padding: 20,
+    },
+    sentCard: {
+      alignItems: 'center',
+      paddingVertical: 32,
+    },
+    iconCircle: {
+      width: 64,
+      height: 64,
+      borderRadius: 32,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 16,
+    },
+    sentTitle: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    sentText: {
+      fontSize: 15,
+      lineHeight: 22,
+      color: ui.muted,
+      textAlign: 'center',
+      marginTop: 8,
+      marginBottom: 24,
+    },
+  });

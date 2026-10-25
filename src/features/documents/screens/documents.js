@@ -11,7 +11,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {cardShadow, ui} from '../../../theme/ui';
+import {useAppTheme, useStyles} from '../../../theme/theme';
 import {formatRupees} from '../../../utils/currency';
 import {fetchDocumentsAPI} from '../store/api';
 
@@ -22,6 +22,8 @@ const TABS = [
 ];
 
 function DocumentCard({doc, onPress}) {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const {theme} = useTheme();
   const isInvoice = doc.type === 'invoice';
   const color = isInvoice ? theme.colors.primary : theme.colors.secondary;
@@ -79,6 +81,8 @@ function DocumentCard({doc, onPress}) {
 }
 
 function Documents() {
+  const {ui, isDark} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const {theme} = useTheme();
   const [type, setType] = useState(undefined);
@@ -203,6 +207,7 @@ function Documents() {
             style={styles.searchInput}
             placeholder="Search name, phone or number"
             placeholderTextColor={ui.faint}
+            keyboardAppearance={isDark ? 'dark' : 'light'}
             value={search}
             onChangeText={setSearch}
             returnKeyType="search"
@@ -279,156 +284,157 @@ function Documents() {
 
 export default Documents;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  controls: {
-    paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  search: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ui.card,
-    borderRadius: 14,
-    paddingHorizontal: 12,
-    minHeight: 48,
-    borderWidth: 1,
-    borderColor: ui.border,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 15,
-    color: ui.text,
-    marginLeft: 8,
-    paddingVertical: 10,
-  },
-  tabs: {
-    flexDirection: 'row',
-    backgroundColor: ui.border + '99',
-    borderRadius: 12,
-    padding: 4,
-    marginTop: 12,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-    borderRadius: 9,
-  },
-  tabActive: {
-    backgroundColor: ui.card,
-    ...cardShadow,
-    elevation: 1,
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: ui.muted,
-  },
-  tabTextActive: {
-    fontWeight: '700',
-  },
-  list: {
-    padding: 16,
-    paddingTop: 8,
-    flexGrow: 1,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ui.card,
-    borderRadius: 16,
-    padding: 14,
-    marginBottom: 12,
-    overflow: 'hidden',
-    ...cardShadow,
-  },
-  cardIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  cardBody: {
-    flex: 1,
-    marginRight: 8,
-  },
-  customer: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: ui.text,
-  },
-  number: {
-    fontSize: 13,
-    color: ui.muted,
-    marginTop: 2,
-  },
-  meta: {
-    fontSize: 12,
-    color: ui.faint,
-    marginTop: 2,
-  },
-  creator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 3,
-  },
-  creatorText: {
-    fontSize: 12,
-    color: ui.faint,
-    marginLeft: 3,
-  },
-  cardRight: {
-    alignItems: 'flex-end',
-  },
-  total: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  badge: {
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    marginTop: 6,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  state: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 64,
-    paddingHorizontal: 32,
-  },
-  stateTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: ui.text,
-    marginTop: 12,
-  },
-  stateText: {
-    fontSize: 14,
-    color: ui.muted,
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  retry: {
-    width: 'auto',
-    marginTop: 20,
-  },
-  retryButton: {
-    borderRadius: 12,
-    paddingHorizontal: 24,
-  },
-  footerSpinner: {
-    marginVertical: 16,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    controls: {
+      paddingHorizontal: 16,
+      paddingBottom: 8,
+    },
+    search: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.card,
+      borderRadius: 14,
+      paddingHorizontal: 12,
+      minHeight: 48,
+      borderWidth: 1,
+      borderColor: ui.border,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 15,
+      color: ui.text,
+      marginLeft: 8,
+      paddingVertical: 10,
+    },
+    tabs: {
+      flexDirection: 'row',
+      backgroundColor: ui.border + '99',
+      borderRadius: 12,
+      padding: 4,
+      marginTop: 12,
+    },
+    tab: {
+      flex: 1,
+      alignItems: 'center',
+      paddingVertical: 8,
+      borderRadius: 9,
+    },
+    tabActive: {
+      backgroundColor: ui.card,
+      ...cardShadow,
+      elevation: 1,
+    },
+    tabText: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: ui.muted,
+    },
+    tabTextActive: {
+      fontWeight: '700',
+    },
+    list: {
+      padding: 16,
+      paddingTop: 8,
+      flexGrow: 1,
+    },
+    card: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.card,
+      borderRadius: 16,
+      padding: 14,
+      marginBottom: 12,
+      overflow: 'hidden',
+      ...cardShadow,
+    },
+    cardIcon: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    cardBody: {
+      flex: 1,
+      marginRight: 8,
+    },
+    customer: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: ui.text,
+    },
+    number: {
+      fontSize: 13,
+      color: ui.muted,
+      marginTop: 2,
+    },
+    meta: {
+      fontSize: 12,
+      color: ui.faint,
+      marginTop: 2,
+    },
+    creator: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginTop: 3,
+    },
+    creatorText: {
+      fontSize: 12,
+      color: ui.faint,
+      marginLeft: 3,
+    },
+    cardRight: {
+      alignItems: 'flex-end',
+    },
+    total: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    badge: {
+      borderRadius: 8,
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      marginTop: 6,
+    },
+    badgeText: {
+      fontSize: 11,
+      fontWeight: '700',
+    },
+    state: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 64,
+      paddingHorizontal: 32,
+    },
+    stateTitle: {
+      fontSize: 17,
+      fontWeight: '700',
+      color: ui.text,
+      marginTop: 12,
+    },
+    stateText: {
+      fontSize: 14,
+      color: ui.muted,
+      textAlign: 'center',
+      marginTop: 4,
+    },
+    retry: {
+      width: 'auto',
+      marginTop: 20,
+    },
+    retryButton: {
+      borderRadius: 12,
+      paddingHorizontal: 24,
+    },
+    footerSpinner: {
+      marginVertical: 16,
+    },
+  });

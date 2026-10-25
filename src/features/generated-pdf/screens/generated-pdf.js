@@ -12,16 +12,21 @@ import {storage} from '../../../..';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import {Icon} from '@rneui/themed';
-import {amountInWords, escapeHtml, formatNumber} from '../../../utils/pdf-format';
+import {
+  amountInWords,
+  escapeHtml,
+  formatNumber,
+} from '../../../utils/pdf-format';
 import pdfBackground from '../../../assets/images/pdf-background';
 import signatureStamp from '../../../assets/images/signature-stamp';
 import openSansFont from '../../../assets/fonts/open-sans';
 import rupeeFont from '../../../assets/fonts/rupee';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import AppDialog from '../../../components/common/app-dialog';
-import {cardShadow, ui} from '../../../theme/ui';
+import {useStyles} from '../../../theme/theme';
 
 function GeneratedPdf({route}) {
+  const styles = useStyles(makeStyles);
   const {
     table,
     total,
@@ -138,9 +143,9 @@ function GeneratedPdf({route}) {
         <li><span class="fw-semibold">${
           is_billing ? 'Invoice' : 'Quotation'
         } Number</span>: <span  style="font-weight: 600;">${number}</span></li> 
-          <li><span class="fw-semibold">Date:</span> <span style="font-weight: 600;">${moment(date).format(
-            'DD MMM, YYYY',
-          )}</span></li>
+          <li><span class="fw-semibold">Date:</span> <span style="font-weight: 600;">${moment(
+            date,
+          ).format('DD MMM, YYYY')}</span></li>
           <li><span class="fw-semibold">Date of Loading:</span> <span style="font-weight: 600;">${loadingDate}</span></li>
         </ul>
       </div>
@@ -183,7 +188,9 @@ function GeneratedPdf({route}) {
                 <td></td>
                 <td></td>
                 <td class="fs-5 fw-bold" style="font-weight: 300;">Tax/GST</td>
-                <td class="fs-5 fw-bold" style="font-weight: 300;">&#8377; ${formatNumber(tax)}</td>
+                <td class="fs-5 fw-bold" style="font-weight: 300;">&#8377; ${formatNumber(
+                  tax,
+                )}</td>
               </tr>`
               : ''
           }
@@ -194,7 +201,9 @@ function GeneratedPdf({route}) {
             <td></td>
             <td></td>
             <td class="fs-5 fw-bold" style="font-weight: 600;">Grand-Total</td>
-            <td class="fs-5 fw-bold" style="font-weight: 600;">&#8377; ${formatNumber(total)}</td>
+            <td class="fs-5 fw-bold" style="font-weight: 600;">&#8377; ${formatNumber(
+              total,
+            )}</td>
           </tr>
           
         </tbody>
@@ -326,7 +335,15 @@ function GeneratedPdf({route}) {
           titleStyle={{color: theme.colors.primary}}
         />
         <Button
-          icon={<Icon name="share" type="material" size={20} color="#fff" style={styles.shareIcon} />}
+          icon={
+            <Icon
+              name="share"
+              type="material"
+              size={20}
+              color="#fff"
+              style={styles.shareIcon}
+            />
+          }
           title="Share"
           color="secondary"
           raised={false}
@@ -349,48 +366,49 @@ function GeneratedPdf({route}) {
 
 export default GeneratedPdf;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    fontSize: 15,
-    color: ui.muted,
-  },
-  pdf: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: 12,
-    backgroundColor: ui.card,
-    paddingHorizontal: 20,
-    paddingTop: 14,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    ...cardShadow,
-    elevation: 12,
-  },
-  footerButton: {
-    flex: 1,
-    width: 'auto',
-  },
-  shareButton: {
-    flex: 2,
-  },
-  button: {
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  shareIcon: {
-    marginRight: 8,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    loading: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loadingText: {
+      marginTop: 12,
+      fontSize: 15,
+      color: ui.muted,
+    },
+    pdf: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    footer: {
+      flexDirection: 'row',
+      gap: 12,
+      backgroundColor: ui.card,
+      paddingHorizontal: 20,
+      paddingTop: 14,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      ...cardShadow,
+      elevation: 12,
+    },
+    footerButton: {
+      flex: 1,
+      width: 'auto',
+    },
+    shareButton: {
+      flex: 2,
+    },
+    button: {
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    shareIcon: {
+      marginRight: 8,
+    },
+  });

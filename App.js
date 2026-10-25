@@ -12,57 +12,65 @@ import NavigationStack from './src/components/navigation/navigation-stack';
 import SplashScreen from './src/features/splash/splash-screen';
 import {AuthProvider} from './src/features/auth/auth-context';
 import {createTheme, ThemeProvider} from '@rneui/themed';
-import {ui} from './src/theme/ui';
+import {palette} from './src/theme/palettes';
+import {AppThemeProvider, useAppTheme} from './src/theme/theme';
 
-function App() {
+const brand = colors => ({
+  primary: colors.primary,
+  secondary: colors.secondary,
+  tertiary: colors.tertiary,
+});
+
+// React Native Elements theme; AppThemeProvider switches its light/dark mode.
+const elementsTheme = createTheme({
+  // From the active palette in src/theme/palettes.js.
+  lightColors: brand(palette.light),
+  darkColors: brand(palette.dark),
+  components: {
+    Button: {
+      raised: true,
+      containerStyle: {
+        width: '100%',
+        borderRadius: 4,
+      },
+      buttonStyle: {
+        width: '100%',
+        borderRadius: 4,
+      },
+    },
+  },
+});
+
+function AppContent() {
+  const {ui, isDark} = useAppTheme();
   const [showSplash, setShowSplash] = useState(true);
   const hideSplash = useCallback(() => setShowSplash(false), []);
 
-  const theme = createTheme({
-    lightColors: {
-      primary: '#6D6875',
-      secondary: '#E5989B',
-      old_rose: '#B5838D',
-      melon: '#FFB4A2',
-      apricot: '#FFCDB2',
-    },
-    darkColors: {
-      primary: '#6D6875',
-      secondary: '#E5989B',
-      old_rose: '#B5838D',
-      melon: '#FFB4A2',
-      apricot: '#FFCDB2',
-    },
-    components: {
-      Button: {
-        raised: true,
-        containerStyle: {
-          width: '100%',
-          borderRadius: 4,
-        },
-        buttonStyle: {
-          width: '100%',
-          borderRadius: 4,
-        },
-      },
-    },
-  });
+  return (
+    <>
+      <StatusBar
+        barStyle={showSplash || isDark ? 'light-content' : 'dark-content'}
+        translucent
+        backgroundColor="transparent"
+      />
+      {/* Covers the native splash colour that stays as the window background. */}
+      <View style={[styles.root, {backgroundColor: ui.screen}]}>
+        <AuthProvider>
+          <NavigationStack />
+        </AuthProvider>
+        {showSplash && <SplashScreen onFinish={hideSplash} />}
+      </View>
+    </>
+  );
+}
 
+function App() {
   return (
     <SafeAreaProvider>
-      <ThemeProvider theme={theme}>
-        <StatusBar
-          barStyle={showSplash ? 'light-content' : 'dark-content'}
-          translucent
-          backgroundColor="transparent"
-        />
-        {/* Covers the native splash colour that stays as the window background. */}
-        <View style={styles.root}>
-          <AuthProvider>
-            <NavigationStack />
-          </AuthProvider>
-          {showSplash && <SplashScreen onFinish={hideSplash} />}
-        </View>
+      <ThemeProvider theme={elementsTheme}>
+        <AppThemeProvider>
+          <AppContent />
+        </AppThemeProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );
@@ -73,6 +81,5 @@ export default App;
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: ui.screen,
   },
 });

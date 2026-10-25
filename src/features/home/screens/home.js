@@ -3,9 +3,11 @@ import {Icon, Text, useTheme} from '@rneui/themed';
 import React, {useEffect} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import {storage} from '../../../../index';
-import {ui} from '../../../theme/ui';
+import {useAppTheme, useStyles} from '../../../theme/theme';
 
 function ActionCard({icon, title, subtitle, color, onPress}) {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -20,12 +22,14 @@ function ActionCard({icon, title, subtitle, color, onPress}) {
         <Text style={styles.cardTitle}>{title}</Text>
         <Text style={styles.cardSubtitle}>{subtitle}</Text>
       </View>
-      <Icon name="chevron-right" type="material" color="#B8B3BC" size={26} />
+      <Icon name="chevron-right" type="material" color={ui.faint} size={26} />
     </Pressable>
   );
 }
 
 function Home() {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const navigation = useNavigation();
   const {theme} = useTheme();
 
@@ -69,7 +73,7 @@ function Home() {
         icon="folder-open"
         title="Documents"
         subtitle="View and share past quotations and invoices"
-        color={theme.colors.old_rose}
+        color={theme.colors.tertiary}
         onPress={() => navigation.navigate('documents')}
       />
 
@@ -87,79 +91,80 @@ function Home() {
 
 export default Home;
 
-const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-    paddingTop: 72,
-    paddingBottom: 32,
-  },
-  header: {
-    marginBottom: 36,
-  },
-  logo: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  company: {
-    fontSize: 30,
-    fontWeight: '700',
-    color: '#2E2A33',
-  },
-  tagline: {
-    fontSize: 15,
-    color: '#7A7480',
-    marginTop: 4,
-  },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 1,
-    color: '#9A94A0',
-    marginTop: 8,
-    marginBottom: 10,
-    marginLeft: 4,
-  },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 12,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#6D6875',
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: {width: 0, height: 4},
-  },
-  cardPressed: {
-    opacity: 0.85,
-  },
-  iconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 14,
-  },
-  cardText: {
-    flex: 1,
-  },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#2E2A33',
-  },
-  cardSubtitle: {
-    fontSize: 13,
-    color: '#7A7480',
-    marginTop: 2,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+      paddingTop: 72,
+      paddingBottom: 32,
+    },
+    header: {
+      marginBottom: 36,
+    },
+    logo: {
+      width: 52,
+      height: 52,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 20,
+    },
+    company: {
+      fontSize: 30,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    tagline: {
+      fontSize: 15,
+      color: ui.muted,
+      marginTop: 4,
+    },
+    sectionLabel: {
+      fontSize: 12,
+      fontWeight: '600',
+      letterSpacing: 1,
+      color: ui.faint,
+      marginTop: 8,
+      marginBottom: 10,
+      marginLeft: 4,
+    },
+    card: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.card,
+      borderRadius: 18,
+      padding: 16,
+      marginBottom: 12,
+      overflow: 'hidden',
+      elevation: 2,
+      shadowColor: ui.text,
+      shadowOpacity: 0.12,
+      shadowRadius: 10,
+      shadowOffset: {width: 0, height: 4},
+    },
+    cardPressed: {
+      opacity: 0.85,
+    },
+    iconCircle: {
+      width: 48,
+      height: 48,
+      borderRadius: 14,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 14,
+    },
+    cardText: {
+      flex: 1,
+    },
+    cardTitle: {
+      fontSize: 17,
+      fontWeight: '600',
+      color: ui.text,
+    },
+    cardSubtitle: {
+      fontSize: 13,
+      color: ui.muted,
+      marginTop: 2,
+    },
+  });

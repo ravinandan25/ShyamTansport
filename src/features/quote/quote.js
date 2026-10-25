@@ -16,7 +16,7 @@ import FormField from '../../components/common/form-field';
 import ItemModal from '../../components/quote/item-modal';
 import ItemRow from '../../components/quote/item-row';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import {cardShadow, ui} from '../../theme/ui';
+import {useAppTheme, useStyles} from '../../theme/theme';
 import {formatRupees} from '../../utils/currency';
 import {createInvoiceAPI, createQuotationAPI} from './store/api';
 
@@ -53,6 +53,7 @@ const validate = ({customerName, phone, address, tableData, tax}) => {
 };
 
 function Section({title, action, children, onLayout}) {
+  const styles = useStyles(makeStyles);
   return (
     <View style={styles.card} onLayout={onLayout}>
       <View style={styles.cardHeader}>
@@ -65,6 +66,8 @@ function Section({title, action, children, onLayout}) {
 }
 
 function Quote() {
+  const {ui, isDark} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const route = useRoute();
   const {is_billing} = route.params;
   const navigation = useNavigation();
@@ -365,6 +368,7 @@ function Quote() {
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
+        isDarkModeEnabled={isDark}
         date={moment(loadingDate, 'DD MMM, YYYY').toDate()}
         onConfirm={handleConfirm}
         onCancel={() => setDatePickerVisibility(false)}
@@ -375,129 +379,130 @@ function Quote() {
 
 export default Quote;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  flex: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-    paddingBottom: 32,
-  },
-  card: {
-    backgroundColor: ui.card,
-    borderRadius: 18,
-    padding: 16,
-    marginBottom: 16,
-    ...cardShadow,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  cardTitle: {
-    fontSize: 17,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  lastField: {
-    marginBottom: 0,
-  },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 20,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-  },
-  addText: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  empty: {
-    alignItems: 'center',
-    paddingVertical: 24,
-    borderWidth: 1.5,
-    borderStyle: 'dashed',
-    borderColor: ui.border,
-    borderRadius: 14,
-  },
-  emptyError: {
-    borderColor: ui.danger,
-  },
-  errorText: {
-    fontSize: 12,
-    color: ui.danger,
-    marginTop: 6,
-  },
-  emptyText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: ui.muted,
-    marginTop: 8,
-  },
-  emptyHint: {
-    fontSize: 13,
-    color: ui.faint,
-    marginTop: 2,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: 48,
-  },
-  summaryLabel: {
-    fontSize: 15,
-    color: ui.muted,
-  },
-  summaryValue: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: ui.text,
-  },
-  taxField: {
-    width: 120,
-    marginBottom: 0,
-  },
-  footer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ui.card,
-    paddingHorizontal: 20,
-    paddingTop: 14,
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    flex: {
+      flex: 1,
+    },
+    content: {
+      padding: 16,
+      paddingBottom: 32,
+    },
+    card: {
+      backgroundColor: ui.card,
+      borderRadius: 18,
+      padding: 16,
+      marginBottom: 16,
+      ...cardShadow,
+    },
+    cardHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    cardTitle: {
+      fontSize: 17,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    lastField: {
+      marginBottom: 0,
+    },
+    addButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderRadius: 20,
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+    },
+    addText: {
+      fontSize: 14,
+      fontWeight: '600',
+      marginLeft: 4,
+    },
+    empty: {
+      alignItems: 'center',
+      paddingVertical: 24,
+      borderWidth: 1.5,
+      borderStyle: 'dashed',
+      borderColor: ui.border,
+      borderRadius: 14,
+    },
+    emptyError: {
+      borderColor: ui.danger,
+    },
+    errorText: {
+      fontSize: 12,
+      color: ui.danger,
+      marginTop: 6,
+    },
+    emptyText: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: ui.muted,
+      marginTop: 8,
+    },
+    emptyHint: {
+      fontSize: 13,
+      color: ui.faint,
+      marginTop: 2,
+    },
+    summaryRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      minHeight: 48,
+    },
+    summaryLabel: {
+      fontSize: 15,
+      color: ui.muted,
+    },
+    summaryValue: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: ui.text,
+    },
+    taxField: {
+      width: 120,
+      marginBottom: 0,
+    },
+    footer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.card,
+      paddingHorizontal: 20,
+      paddingTop: 14,
 
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    ...cardShadow,
-    elevation: 12,
-  },
-  totalLabel: {
-    fontSize: 13,
-    color: ui.muted,
-  },
-  totalValue: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  generate: {
-    flex: 1,
-    width: 'auto',
-    marginLeft: 16,
-  },
-  generateButton: {
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  generateTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-  },
-});
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      ...cardShadow,
+      elevation: 12,
+    },
+    totalLabel: {
+      fontSize: 13,
+      color: ui.muted,
+    },
+    totalValue: {
+      fontSize: 22,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    generate: {
+      flex: 1,
+      width: 'auto',
+      marginLeft: 16,
+    },
+    generateButton: {
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    generateTitle: {
+      fontSize: 15,
+      fontWeight: '700',
+    },
+  });

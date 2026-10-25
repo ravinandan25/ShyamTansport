@@ -3,13 +3,15 @@ import React, {useEffect, useState} from 'react';
 import {Pressable, ScrollView, StyleSheet, View} from 'react-native';
 import Modal from '../common/app-modal';
 import FormField from '../common/form-field';
-import {ui} from '../../theme/ui';
+import {useAppTheme, useStyles} from '../../theme/theme';
 import {formatRupees} from '../../utils/currency';
 
 const NO_ERRORS = {item: '', qty: '', rate: ''};
 
 // Add a new item (item = null) or edit / delete an existing one.
 function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const {theme} = useTheme();
   const [description, setDescription] = useState('');
   const [qty, setQty] = useState('');
@@ -142,63 +144,64 @@ function ItemModal({isOpen, item, onClose, onSave, onDelete}) {
 
 export default ItemModal;
 
-const styles = StyleSheet.create({
-  sheet: {
-    backgroundColor: ui.card,
-    borderRadius: 20,
-    padding: 20,
-    maxHeight: '90%',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  delete: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  deleteText: {
-    color: ui.danger,
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  row: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  half: {
-    flex: 1,
-  },
-  amount: {
-    fontSize: 14,
-    color: ui.muted,
-    textAlign: 'right',
-    marginBottom: 8,
-  },
-  amountValue: {
-    fontWeight: '700',
-    color: ui.text,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-  },
-  actionButton: {
-    flex: 1,
-    width: 'auto',
-  },
-  button: {
-    borderRadius: 12,
-    paddingVertical: 12,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    sheet: {
+      backgroundColor: ui.card,
+      borderRadius: 20,
+      padding: 20,
+      maxHeight: '90%',
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    delete: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+    },
+    deleteText: {
+      color: ui.danger,
+      fontWeight: '600',
+      marginLeft: 4,
+    },
+    row: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    half: {
+      flex: 1,
+    },
+    amount: {
+      fontSize: 14,
+      color: ui.muted,
+      textAlign: 'right',
+      marginBottom: 8,
+    },
+    amountValue: {
+      fontWeight: '700',
+      color: ui.text,
+    },
+    actions: {
+      flexDirection: 'row',
+      gap: 12,
+      marginTop: 8,
+    },
+    actionButton: {
+      flex: 1,
+      width: 'auto',
+    },
+    button: {
+      borderRadius: 12,
+      paddingVertical: 12,
+    },
+  });

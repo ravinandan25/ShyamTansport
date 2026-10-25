@@ -1,10 +1,12 @@
 import {Icon, Text} from '@rneui/themed';
 import React from 'react';
 import {Pressable, StyleSheet, View} from 'react-native';
-import {ui} from '../../theme/ui';
+import {useAppTheme, useStyles} from '../../theme/theme';
 import {formatRupees} from '../../utils/currency';
 
 function ItemRow({index, row, onPress}) {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   return (
     <Pressable
       onPress={onPress}
@@ -29,46 +31,47 @@ function ItemRow({index, row, onPress}) {
 
 export default ItemRow;
 
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderTopWidth: 1,
-    borderTopColor: ui.border,
-  },
-  index: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: ui.screen,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  indexText: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: ui.muted,
-  },
-  details: {
-    flex: 1,
-    marginRight: 8,
-  },
-  name: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: ui.text,
-  },
-  meta: {
-    fontSize: 13,
-    color: ui.muted,
-    marginTop: 2,
-  },
-  amount: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: ui.text,
-    marginRight: 2,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 12,
+      borderTopWidth: 1,
+      borderTopColor: ui.border,
+    },
+    index: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      backgroundColor: ui.screen,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    indexText: {
+      fontSize: 13,
+      fontWeight: '600',
+      color: ui.muted,
+    },
+    details: {
+      flex: 1,
+      marginRight: 8,
+    },
+    name: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: ui.text,
+    },
+    meta: {
+      fontSize: 13,
+      color: ui.muted,
+      marginTop: 2,
+    },
+    amount: {
+      fontSize: 15,
+      fontWeight: '600',
+      color: ui.text,
+      marginRight: 2,
+    },
+  });

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Keep in sync with theme.colors.primary in App.js and src/features/splash. -->
-    <color name="splash_background">#6D6875</color>
+    <!-- Keep in sync with the active palette's light primary in src/theme/palettes.js. -->
+    <color name="splash_background">#0B4F6C</color>
+    <!-- App icon background: the active palette's light primary (src/theme/palettes.js). -->
+    <color name="ic_launcher_background">#0B4F6C</color>
 </resources>

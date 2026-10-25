@@ -11,11 +11,13 @@ import {
 } from 'react-native';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FormField from '../../../components/common/form-field';
-import {cardShadow, ui} from '../../../theme/ui';
+import {useAppTheme, useStyles} from '../../../theme/theme';
 import {useAuth} from '../auth-context';
 import {normalizePhone} from '../phone';
 
 function Login() {
+  const {ui} = useAppTheme();
+  const styles = useStyles(makeStyles);
   const {theme} = useTheme();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
@@ -153,78 +155,79 @@ function Login() {
 
 export default Login;
 
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: ui.screen,
-  },
-  content: {
-    flexGrow: 1,
-    paddingHorizontal: 20,
-  },
-  logo: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: '700',
-    color: ui.text,
-  },
-  subtitle: {
-    fontSize: 15,
-    color: ui.muted,
-    marginTop: 4,
-    marginBottom: 28,
-  },
-  card: {
-    backgroundColor: ui.card,
-    borderRadius: 20,
-    padding: 20,
-    ...cardShadow,
-  },
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: ui.danger + '14',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-  },
-  bannerText: {
-    flex: 1,
-    fontSize: 14,
-    color: ui.danger,
-    marginLeft: 8,
-  },
-  forgot: {
-    alignSelf: 'flex-end',
-    marginTop: -4,
-    marginBottom: 12,
-  },
-  forgotText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  submit: {
-    width: 'auto',
-  },
-  submitButton: {
-    borderRadius: 14,
-    paddingVertical: 14,
-  },
-  submitTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  help: {
-    fontSize: 13,
-    color: ui.faint,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-});
+const makeStyles = ({ui, cardShadow}) =>
+  StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: ui.screen,
+    },
+    content: {
+      flexGrow: 1,
+      paddingHorizontal: 20,
+    },
+    logo: {
+      width: 56,
+      height: 56,
+      borderRadius: 16,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 20,
+    },
+    title: {
+      fontSize: 30,
+      fontWeight: '700',
+      color: ui.text,
+    },
+    subtitle: {
+      fontSize: 15,
+      color: ui.muted,
+      marginTop: 4,
+      marginBottom: 28,
+    },
+    card: {
+      backgroundColor: ui.card,
+      borderRadius: 20,
+      padding: 20,
+      ...cardShadow,
+    },
+    banner: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: ui.danger + '14',
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 16,
+    },
+    bannerText: {
+      flex: 1,
+      fontSize: 14,
+      color: ui.danger,
+      marginLeft: 8,
+    },
+    forgot: {
+      alignSelf: 'flex-end',
+      marginTop: -4,
+      marginBottom: 12,
+    },
+    forgotText: {
+      fontSize: 14,
+      fontWeight: '600',
+    },
+    submit: {
+      width: 'auto',
+    },
+    submitButton: {
+      borderRadius: 14,
+      paddingVertical: 14,
+    },
+    submitTitle: {
+      fontSize: 16,
+      fontWeight: '700',
+    },
+    help: {
+      fontSize: 13,
+      color: ui.faint,
+      textAlign: 'center',
+      marginTop: 20,
+    },
+  });

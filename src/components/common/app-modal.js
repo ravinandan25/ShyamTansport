@@ -1,13 +1,15 @@
 import React from 'react';
 import {Modal, Pressable, StyleSheet, View} from 'react-native';
+import {useAppTheme} from '../../theme/theme';
 
 // Drop-in replacement for react-native-modal, which relies on APIs
 // (InteractionManager) that were removed from React Native core.
 function AppModal({isVisible, onBackButtonPress, onBackdropPress, children}) {
+  const {isDark} = useAppTheme();
   return (
     <Modal
       visible={isVisible}
-      backdropColor="rgba(0,0,0,0.1)"
+      backdropColor={isDark ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.1)'}
       animationType="fade"
       statusBarTranslucent
       navigationBarTranslucent
