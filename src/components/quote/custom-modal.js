@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import Modal from 'react-native-modal';
+import Modal from '../common/app-modal';
 import {Button, Input, Text, useTheme} from '@rneui/themed';
 import {ScrollView, View, TouchableOpacity} from 'react-native';
 
@@ -83,7 +83,7 @@ function CustomModal({row, setTableData, isOpen, setIsOpen, tableData}) {
           borderRadius: 8,
           padding: 10,
         }}>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps="handled">
           <View
             style={{
               display: 'flex',

@@ -31,7 +31,6 @@ function Quote() {
   const [customerName, setCustomerName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
-  const [tableString, setTableString] = useState('');
   const [loadingDate, setLoadingDate] = useState(
     moment().format('DD MMM, YYYY'),
   );
@@ -58,19 +57,6 @@ function Quote() {
     }
 
     setTotal(temp_total);
-
-    const tableRowsHTML = tableData
-      .map(item => {
-        return `<tr>
-          <td>${item.id}</td>
-          <td>${item.item}</td>
-          <td class="text-center align-middle" >${item.qty}</td>
-          <td>${item.rate}</td>
-          <td>${item.qty * item.rate}</td>
-        </tr>`;
-      })
-      .join('');
-    setTableString(tableRowsHTML);
   }, [tableData, tax]);
 
   const generatePayload = async () => {
@@ -101,13 +87,14 @@ function Quote() {
 
       navigation.navigate('generated_pdf', {
         table: tableData,
-        total: total,
+        // Use the server's total and date so this PDF matches the one Django stores.
+        total: res.total,
+        date: res.date,
         loadingDate: loadingDate,
         customerName: customerName,
         phone: phone,
         address: address,
         tax: tax,
-        tableString: tableString,
         is_billing: is_billing,
         number: is_billing ? res.invoice_number : res?.quotation_number,
       });
@@ -127,7 +114,7 @@ function Quote() {
       <KeyboardAvoidingView
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView>
+        <ScrollView keyboardShouldPersistTaps="handled">
           <View style={{padding: 10, marginBottom: 200}}>
             <Input
               textContentType="name"

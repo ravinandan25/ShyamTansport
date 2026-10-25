@@ -11,7 +11,11 @@ import {storage} from '../../../..';
 import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import {Icon} from '@rneui/themed';
-import {inrInWords} from 'inr-words';
+import {amountInWords, escapeHtml, formatNumber} from '../../../utils/pdf-format';
+import pdfBackground from '../../../assets/images/pdf-background';
+import signatureStamp from '../../../assets/images/signature-stamp';
+import openSansFont from '../../../assets/fonts/open-sans';
+import rupeeFont from '../../../assets/fonts/rupee';
 
 function GeneratedPdf({route}) {
   const {
@@ -22,17 +26,26 @@ function GeneratedPdf({route}) {
     phone,
     address,
     tax,
-    tableString,
+    date,
     is_billing,
     number,
   } = route.params;
 
-  // const exampleImageUri = Image.resolveAssetSource(background_image).uri;
 
   const [url, setUrl] = useState('');
 
-  let totalInWords = inrInWords(total);
-  // One Hundred Forty Four Rupees Only
+  const totalInWords = amountInWords(total);
+  const tableString = table
+    .map((item, index) => {
+      return `<tr>
+          <td>${index + 1}</td>
+          <td>${escapeHtml(item.item)}</td>
+          <td class="text-center align-middle" >${formatNumber(item.qty)}</td>
+          <td>${formatNumber(item.rate)}</td>
+          <td>${formatNumber(item.qty * item.rate)}</td>
+        </tr>`;
+    })
+    .join('');
 
   let options = {
     html: `<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
@@ -53,9 +66,23 @@ function GeneratedPdf({route}) {
         --bs-border-color: #eeeeee;
       }
     </style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+      @font-face {
+        font-family: 'Open Sans';
+        src: url(${openSansFont}) format('woff2');
+        font-weight: 300 800;
+      }
+      /* Open Sans has no rupee sign; take it from Noto Sans so every PDF draws the same glyph. */
+      @font-face {
+        font-family: 'Open Sans';
+        src: url(${rupeeFont}) format('woff2');
+        font-weight: 300 800;
+        unicode-range: U+20B9;
+      }
+      body {
+        font-family: 'Open Sans', sans-serif;
+      }
+    </style>
     
     <div class="px-5 position-relative" style=" overflow: hidden; ">
         <!-- Background image with opacity -->
@@ -63,7 +90,7 @@ function GeneratedPdf({route}) {
           position: absolute;
           top: 0; left: 0;
           width: 100%; height: 100%;
-          background-image: url('https://drive.google.com/uc?id=16nBYgGrvsRYL6SXjhpO78pK8aNZwlogx');
+          background-image: url('${pdfBackground}');
           background-size: cover;
           background-repeat: no-repeat;
           background-position: center;
@@ -104,7 +131,7 @@ function GeneratedPdf({route}) {
         <li><span class="fw-semibold">${
           is_billing ? 'Invoice' : 'Quotation'
         } Number</span>: <span  style="font-weight: 600;">${number}</span></li> 
-          <li><span class="fw-semibold">Date:</span> <span style="font-weight: 600;">${moment().format(
+          <li><span class="fw-semibold">Date:</span> <span style="font-weight: 600;">${moment(date).format(
             'DD MMM, YYYY',
           )}</span></li>
           <li><span class="fw-semibold">Date of Loading:</span> <span style="font-weight: 600;">${loadingDate}</span></li>
@@ -119,10 +146,10 @@ function GeneratedPdf({route}) {
           is_billing ? 'Invoice' : 'Quotation'
         } To</h4>
       </div>
-        <h6>${customerName}</h6>
+        <h6>${escapeHtml(customerName)}</h6>
         <ul class="list-unstyled">
-          <li style="max-width:200px; ">${address}</li>
-          ${phone && `<li><h6>Phone: +91 ${phone} </h6></li>`}
+          <li style="max-width:200px; ">${escapeHtml(address)}</li>
+          ${phone && `<li><h6>Phone: +91 ${escapeHtml(phone)} </h6></li>`}
         </ul>
       </div>
     </div>
@@ -149,7 +176,7 @@ function GeneratedPdf({route}) {
                 <td></td>
                 <td></td>
                 <td class="fs-5 fw-bold" style="font-weight: 300;">Tax/GST</td>
-                <td class="fs-5 fw-bold" style="font-weight: 300;">&#8377; ${tax}</td>
+                <td class="fs-5 fw-bold" style="font-weight: 300;">&#8377; ${formatNumber(tax)}</td>
               </tr>`
               : ''
           }
@@ -160,7 +187,7 @@ function GeneratedPdf({route}) {
             <td></td>
             <td></td>
             <td class="fs-5 fw-bold" style="font-weight: 600;">Grand-Total</td>
-            <td class="fs-5 fw-bold" style="font-weight: 600;">&#8377; ${total}</td>
+            <td class="fs-5 fw-bold" style="font-weight: 600;">&#8377; ${formatNumber(total)}</td>
           </tr>
           
         </tbody>
@@ -173,7 +200,7 @@ function GeneratedPdf({route}) {
         </div>
     </div>
     <div class="px-5">
-      <div class="row mt-4 mb-5">
+      <div class="row mt-4 mb-3">
           <div class="col-md-6 mt-5 mt-md-0  ">
              <h5 class="fw-bold mb-2">Bank Details:</h5>
              <div>
@@ -187,7 +214,7 @@ function GeneratedPdf({route}) {
           </div>
           <div class="col-md-6 mt-5 mt-md-0 d-md-flex  flex-column align-items-end justify-content-center">
             <div class="d-md-flex justify-content-center flex-column align-items-center" >
-              <img src="https://shyamtransportbucket.s3.ap-south-1.amazonaws.com/team/Gemini_Generated_Image_jli8n2jli8n2jli8.png" style="height:180px" />
+              <img src="${signatureStamp}" style="height:180px" />
              <div style="height:2px;width:200px; background-color:black"></div>
             
               <p class="mt-2">Authorized Signatory</p>
@@ -198,9 +225,9 @@ function GeneratedPdf({route}) {
     </div>
     
     <div class="px-5">
-      <div class="row mt-4 mb-5">
+      <div class="row mt-4 mb-3">
         <div class="col-md-12 mt-5 mt-md-0">
-          <h5 class="fw-bold mb-4">Terms & Conditions</h5>
+          <h5 class="fw-bold mb-3">Terms & Conditions</h5>
           <ol>
             <li>Payment: 95% advance balance on unloading.</li>
             <li>Transit Insurance: 3% per lakh for household goods, 6% for all-risk cover, and 1.5% for cars.</li>
@@ -214,14 +241,14 @@ function GeneratedPdf({route}) {
         </div>
       </div>
     
-      <div class="text-center mt-5">
+      <div class="text-center mt-3">
         <p><span class="fw-semibold">OUR ASSOCIATE BRANCHES:</span> DELHI, KOCHI, VIZAG, GOA, KARWAR, CHENNAI, JAMANAGAR</p>
         <p class="text-muted"><span class="fw-semibold"></span> Thank you for allowing us the opportunity to work with you on this relocation</p>
       </div>
     </div>
     
     <div class="px-5">
-      <div class="container mt-5 border-top"></div>
+      <div class="container mt-3 border-top"></div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
